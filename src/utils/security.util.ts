@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import {prisma} from '../prisma';
-import {Request} from "express";
+import {NextFunction, Request, Response} from "express";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -18,7 +18,12 @@ export const generateToken = async (
         return {success: false, message: 'Server error'};
     }
 
-    const user = await prisma.user.findUnique({where: {username}});
+    const user = await prisma.user.findUnique({
+        where: {
+            username: username,
+            deleted: 0,
+        }
+    });
     if (!user) {
         return {success: false, message: 'User not found'};
     }
@@ -70,7 +75,12 @@ export const getUserByReq = async (req: Request) => {
         return null;
     }
 
-    const user = await prisma.user.findUnique({where: {id: userId}});
+    const user = await prisma.user.findUnique({
+        where: {
+            id: userId,
+            deleted: 0,
+        },
+    });
     if (!user) {
         return null;
     }
@@ -79,9 +89,26 @@ export const getUserByReq = async (req: Request) => {
 };
 
 export const checkUserForAdmin = async (id: number): Promise<boolean> => {
-    const user = await prisma.user.findUnique({where: {id}});
+    const user = await prisma.user.findUnique({
+        where: {
+            id: id,
+            deleted: 0,
+        }
+    });
     if (!user) {
         return false;
     }
     return !!user.admin;
 };
+
+export const checkTokenForValidMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const user = await getUserByReq(req);
+        if (!user) {
+            return res.status(400).json({ message: 'Token is not valid' });
+        }
+        next();
+    } catch (error) {
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+}

@@ -11,7 +11,37 @@ describe('/api/user', () => {
         jest.resetAllMocks();
     })
 
-    test('createUser - Token is not valid', async () => {
+    test('get - Token is not valid', async () => {
+        const response = await request(app)
+            .get('/api/user')
+            .expect('Content-Type', /json/)
+            .expect(400);
+
+        expect(response.body.message).toBe('Token is not valid');
+    });
+
+    test('get - Success', async () => {
+        const reqBodyForToken = {
+            username: 'root',
+            password: 'root',
+        } as any;
+
+        const responseWithToken = await request(app)
+            .post('/api/auth')
+            .send(reqBodyForToken)
+
+        const token = responseWithToken.body.token;
+
+        const response = await request(app)
+            .get('/api/user')
+            .set('Authorization', `Bearer ${token}`)
+            .expect('Content-Type', /json/)
+            .expect(200);
+
+        console.log(response.body[0]);
+    });
+
+    test('create - Token is not valid', async () => {
         const reqBody = {
             username: 'anton',
             password: 'anton',
@@ -26,7 +56,7 @@ describe('/api/user', () => {
         expect(response.body.message).toBe('Token is not valid');
     });
 
-    test('createUser - Access denied', async () => {
+    test('create - Access denied', async () => {
         const reqBodyForToken = {
             username: 'anton',
             password: 'anton',
@@ -53,7 +83,7 @@ describe('/api/user', () => {
         expect(response.body.message).toBe('Access denied');
     });
 
-    test('createUser - Username and password are required', async () => {
+    test('create - Username and password are required', async () => {
         const reqBodyForToken = {
             username: 'root',
             password: 'root',
@@ -79,8 +109,8 @@ describe('/api/user', () => {
         expect(response.body.message).toBe('Username and password are required');
     });
 
-    test('createUser - Success', async () => {
-        const usernamePasswordAnswer = 'anton3'
+    test('create - Success', async () => {
+        const usernamePasswordAnswer = `anton${Math.floor(Math.random() * 100)}`;
 
         const reqBodyForToken = {
             username: 'root',
@@ -97,8 +127,8 @@ describe('/api/user', () => {
             admin: 1,
             username: usernamePasswordAnswer,
             password: usernamePasswordAnswer,
-            name: 'Anton Kuzmin',
-            title: 'Test'
+            name: 'Test',
+            title: 'Created by unit tests'
         } as any;
 
         const response = await request(app)
