@@ -74,3 +74,110 @@ export const create = async (req: Request, res: Response) => {
         res.status(500).json({message: 'Error creating user'});
     }
 }
+
+export const edit = async (req: Request, res: Response) => {
+    const user = await getUserByReq(req);
+    if (!user) {
+        return res.status(400).json({message: 'Token is not valid'});
+    }
+
+    const {id, admin, username, password, name, title} = req.body;
+    if (!username || !password) {
+        return res.status(400).json({message: 'Username and password are required'});
+    }
+
+    const isAdmin = user.admin;
+    if (!isAdmin) {
+        if (user.id !== id) {
+            return res.status(403).json({message: 'Access denied'});
+        }
+
+        const targetUser = await prisma.user.findUnique({where: {id}});
+        if (!targetUser) {
+            return res.status(403).json({message: 'Access denied'});
+        }
+
+        try {
+            const passwordIsValid = await bcrypt.compare(password, targetUser.password);
+            if (!passwordIsValid) {
+                return res.status(403).json({message: 'Access denied'});
+            }
+
+            const hashedPassword = await bcrypt.hash(password, 10);
+            const result = await prisma.user.update({
+                where: {id},
+                data: {
+                    username: username,
+                    password: hashedPassword,
+                    name: name,
+                    title: title,
+                },
+            });
+            res.status(201).json({
+                id: result.id,
+                username: result.username,
+                name: result.name,
+                title: result.title,
+            });
+        } catch (error) {
+            res.status(500).json({message: 'Error creating user'});
+        }
+    }
+
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const result = await prisma.user.update({
+            where: {id},
+            data: {
+                admin: admin,
+                username: username,
+                password: hashedPassword,
+                name: name,
+                title: title,
+            },
+        });
+        res.status(201).json({
+            id: result.id,
+            username: result.username,
+            name: result.name,
+            title: result.title,
+        });
+    } catch (error) {
+        res.status(500).json({message: 'Error creating user'});
+    }
+}
+
+export const remove = async (req: Request, res: Response) => {
+    const user = await getUserByReq(req);
+    if (!user) {
+        return res.status(400).json({message: 'Token is not valid'});
+    }
+
+    const id = req.body.id;
+    if (!id) {
+        return res.status(400).json({message: 'ID not found'});
+    }
+
+    const isAdmin = user.admin;
+    if (!isAdmin) {
+        return res.status(403).json({message: 'Access denied'});
+    }
+
+    try {
+        const result = await prisma.user.update({
+            where: {id},
+            data: {
+                deleted: 1,
+            },
+        });
+        res.status(201).json({
+            id: result.id,
+            username: result.username,
+            name: result.name,
+            title: result.title,
+            deleted: result.deleted,
+        });
+    } catch (error) {
+        res.status(500).json({message: 'Error creating user'});
+    }
+}
