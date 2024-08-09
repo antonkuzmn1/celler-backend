@@ -58,6 +58,7 @@ model Table {
   title   String   @default("") @db.Char(255)
 
   tableGroups TableGroup[]
+  columns     Column[]
   rows        Row[]
   cells       Cell[]
   logs        Log[]
@@ -83,6 +84,9 @@ model Column {
   title   String   @default("") @db.Char(255)
   order   Int
   type    String
+  tableId      Int
+
+  Table        Table         @relation(fields: [tableId], references: [id])
 
   columnGroups ColumnGroup[]
   cells        Cell[]

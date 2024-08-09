@@ -181,3 +181,11 @@ export const remove = async (req: Request, res: Response) => {
         res.status(500).json({message: 'Error creating user'});
     }
 }
+
+export const groupAdd = async (req: Request, res: Response) => {
+
+};
+
+export const groupRemove = async (req: Request, res: Response) => {
+
+};
