@@ -1,0 +1,152 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "mysql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model User {
+  id       Int      @id @default(autoincrement())
+  created  DateTime @default(now()) @db.Timestamp(0)
+  updated  DateTime @updatedAt @db.Timestamp()
+  deleted  Int      @default(0) @db.TinyInt()
+  admin    Int      @default(0) @db.TinyInt()
+  username String   @unique @db.Char(30)
+  password String   @db.Char(60)
+  name     String   @default("") @db.Char(100)
+  title    String   @default("") @db.Char(255)
+
+  userGroups    UserGroup[]
+  logsInitiated Log[]       @relation("initiator")
+  logsTargeted  Log[]       @relation("target")
+}
+
+model Group {
+  id      Int      @id @default(autoincrement())
+  created DateTime @default(now()) @db.Timestamp(0)
+  updated DateTime @updatedAt @db.Timestamp()
+  deleted  Int      @default(0) @db.TinyInt()
+  name    String   @unique @db.Char(50)
+  title   String   @default("") @db.Char(255)
+
+  userGroups   UserGroup[]
+  tableGroups  TableGroup[]
+  columnGroups ColumnGroup[]
+  logs         Log[]
+}
+
+model UserGroup {
+  userId  Int
+  groupId Int
+
+  user  User  @relation(fields: [userId], references: [id])
+  group Group @relation(fields: [groupId], references: [id])
+
+  @@id([userId, groupId])
+}
+
+model Table {
+  id      Int      @id @default(autoincrement())
+  created DateTime @default(now()) @db.Timestamp(0)
+  updated DateTime @updatedAt @db.Timestamp()
+  deleted  Int      @default(0) @db.TinyInt()
+  name    String   @unique @db.Char(50)
+  title   String   @default("") @db.Char(255)
+
+  tableGroups TableGroup[]
+  rows        Row[]
+  cells       Cell[]
+  logs        Log[]
+}
+
+model TableGroup {
+  tableId Int
+  groupId Int
+
+  table Table @relation(fields: [tableId], references: [id])
+  group Group @relation(fields: [groupId], references: [id])
+
+  @@id([tableId, groupId])
+}
+
+model Column {
+  id      Int      @id @default(autoincrement())
+  created DateTime @default(now()) @db.Timestamp(0)
+  updated DateTime @updatedAt @db.Timestamp()
+  deleted  Int      @default(0) @db.TinyInt()
+  name    String   @unique @db.Char(50)
+  title   String   @default("") @db.Char(255)
+  order   Int
+  type    String
+
+  columnGroups ColumnGroup[]
+  cells        Cell[]
+  logs         Log[]
+}
+
+model ColumnGroup {
+  column   Column @relation(fields: [columnId], references: [id])
+  columnId Int
+  group    Group  @relation(fields: [groupId], references: [id])
+  groupId  Int
+
+  @@id([columnId, groupId])
+}
+
+model Row {
+  id      Int      @id @default(autoincrement())
+  created DateTime @default(now()) @db.Timestamp(0)
+  updated DateTime @updatedAt @db.Timestamp()
+  deleted  Int      @default(0) @db.TinyInt()
+  tableId Int
+
+  cells Cell[]
+  logs  Log[]
+
+  table Table @relation(fields: [tableId], references: [id])
+}
+
+model Cell {
+  id            Int      @id @default(autoincrement())
+  created       DateTime @default(now()) @db.Timestamp(0)
+  updated       DateTime @updatedAt @db.Timestamp()
+  tableId       Int
+  columnId      Int
+  rowId         Int
+  valueInt      Int      @default(0)
+  valueString   String   @default("")
+  valueDate     DateTime @default(now())
+  valueBoolean  Boolean  @default(false)
+  valueDropdown Json     @default("[]")
+
+  logs Log[]
+
+  table  Table  @relation(fields: [tableId], references: [id])
+  column Column @relation(fields: [columnId], references: [id])
+  row    Row    @relation(fields: [rowId], references: [id])
+}
+
+model Log {
+  id      Int      @id @default(autoincrement())
+  created DateTime @default(now()) @db.Timestamp(0)
+  action  String   @db.Char(100)
+
+  initiatorId Int
+  targetId    Int
+  groupId     Int
+  tableId     Int
+  columnId    Int
+  rowId       Int
+  cellId      Int
+
+  initiator User   @relation("initiator", fields: [initiatorId], references: [id])
+  target    User   @relation("target", fields: [targetId], references: [id])
+  group     Group  @relation(fields: [groupId], references: [id])
+  table     Table  @relation(fields: [tableId], references: [id])
+  column    Column @relation(fields: [columnId], references: [id])
+  row       Row    @relation(fields: [rowId], references: [id])
+  cell      Cell   @relation(fields: [cellId], references: [id])
+}
