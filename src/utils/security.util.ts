@@ -103,14 +103,10 @@ export const checkTokenForValidMiddleware = async (req: Request, res: Response, 
     try {
         const user = await getUserByReq(req);
         if (!user) {
-            return res.status(400).json({message: 'Token is not valid'});
+            return res.status(400).json({message: 'Invalid token'});
         }
         next();
     } catch (error) {
-        return res.status(500).json({message: 'Internal server error'});
+        return res.status(500).json({message: 'Server error'});
     }
-}
-
-export const isAllowedGroups = async () => {
-
 }

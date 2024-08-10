@@ -1,5 +1,6 @@
 import {prisma} from "./prisma";
 import bcrypt from "bcrypt";
+import {logger} from "./logger";
 
 export const createRootIfNotExists = async () => {
     const user = await prisma.user.findUnique({
@@ -15,7 +16,7 @@ export const createRootIfNotExists = async () => {
             // @ts-ignore
             data: {admin, username, password, name, title}
         });
-        console.log('Creator user has been initialized');
+        logger.info('Creator user has been initialized');
         return true;
     } else {
         return false;

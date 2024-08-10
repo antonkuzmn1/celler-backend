@@ -1,5 +1,5 @@
 import {Router} from "express";
-import {create, edit, get, groupAdd, groupRemove, remove} from "../services/user.service";
+import {create, edit, get, remove} from "../services/user.service";
 import {checkTokenForValidMiddleware} from "../utils/security.util";
 
 export const userController = Router();
@@ -9,5 +9,5 @@ userController.post('/', create);
 userController.put('/', edit);
 userController.delete('/', remove);
 
-userController.post('/group', groupAdd);
-userController.delete('/group', groupRemove);
+userController.post('/group', );
+userController.delete('/group', );

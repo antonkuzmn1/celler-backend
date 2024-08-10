@@ -2,7 +2,6 @@ import {Request, Response} from 'express';
 import {prisma} from '../prisma';
 import {getUserByReq} from "../utils/security.util";
 import bcrypt from "bcrypt";
-import {createUserGroup, removeUserGroup} from "./group.service";
 
 export const get = async (_req: Request, res: Response) => {
     const users = await prisma.user.findMany({
@@ -212,46 +211,46 @@ export const remove = async (req: Request, res: Response) => {
     }
 };
 
-export const groupAdd = async (req: Request, res: Response) => {
-    const initiator = await getUserByReq(req);
-    if (!initiator) {
-        return res.status(400).json({message: 'Token is not valid'});
-    }
-    if (!initiator.admin) {
-        return res.status(403).json({message: 'Access denied'});
-    }
-
-    const {userId, groupId} = req.body;
-    if (!userId || !groupId) {
-        return res.status(400).json({message: 'IDs not found'});
-    }
-
-    const userGroup = await createUserGroup(initiator.id, userId, groupId);
-    if (!userGroup.success) {
-        return res.status(400).json({message: userGroup.message});
-    }
-
-    res.status(201).json({message: userGroup.message});
-};
-
-export const groupRemove = async (req: Request, res: Response) => {
-    const initiator = await getUserByReq(req);
-    if (!initiator) {
-        return res.status(400).json({message: 'Token is not valid'});
-    }
-    if (!initiator.admin) {
-        return res.status(403).json({message: 'Access denied'});
-    }
-
-    const {userId, groupId} = req.body;
-    if (!userId || !groupId) {
-        return res.status(400).json({message: 'IDs not found'});
-    }
-
-    const userGroup = await removeUserGroup(initiator.id, userId, groupId);
-    if (!userGroup.success) {
-        return res.status(400).json({message: userGroup.message});
-    }
-
-    res.status(201).json({message: userGroup.message});
-};
+// export const groupAdd = async (req: Request, res: Response) => {
+//     const initiator = await getUserByReq(req);
+//     if (!initiator) {
+//         return res.status(400).json({message: 'Token is not valid'});
+//     }
+//     if (!initiator.admin) {
+//         return res.status(403).json({message: 'Access denied'});
+//     }
+//
+//     const {userId, groupId} = req.body;
+//     if (!userId || !groupId) {
+//         return res.status(400).json({message: 'IDs not found'});
+//     }
+//
+//     const userGroup = await createUserGroup(initiator.id, userId, groupId);
+//     if (!userGroup.success) {
+//         return res.status(400).json({message: userGroup.message});
+//     }
+//
+//     res.status(201).json({message: userGroup.message});
+// };
+//
+// export const groupRemove = async (req: Request, res: Response) => {
+//     const initiator = await getUserByReq(req);
+//     if (!initiator) {
+//         return res.status(400).json({message: 'Token is not valid'});
+//     }
+//     if (!initiator.admin) {
+//         return res.status(403).json({message: 'Access denied'});
+//     }
+//
+//     const {userId, groupId} = req.body;
+//     if (!userId || !groupId) {
+//         return res.status(400).json({message: 'IDs not found'});
+//     }
+//
+//     const userGroup = await removeUserGroup(initiator.id, userId, groupId);
+//     if (!userGroup.success) {
+//         return res.status(400).json({message: userGroup.message});
+//     }
+//
+//     res.status(201).json({message: userGroup.message});
+// };

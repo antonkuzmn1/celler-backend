@@ -1,13 +1,16 @@
 import {Router} from "express";
-import {create, edit, get, remove, userAdd, userRemove} from "../services/group.service";
-import {checkTokenForValidMiddleware} from "../utils/security.util";
+import {GroupService} from "../services/group.service";
+import SecurityMiddleware from "../middleware/security.middleware";
+
+const sec = new SecurityMiddleware();
+const service = new GroupService();
 
 export const groupController = Router();
 
-groupController.get('/', checkTokenForValidMiddleware, get);
-groupController.post('/', create);
-groupController.put('/', edit);
-groupController.delete('/', remove);
+groupController.get('/', sec.getUserFromToken, service.getAll);
+groupController.post('/', sec.getUserFromToken, sec.userShouldBeAdmin, service.create);
+groupController.put('/', sec.getUserFromToken, sec.userShouldBeAdmin, service.edit);
+groupController.delete('/', sec.getUserFromToken, sec.userShouldBeAdmin, service.remove);
 
-groupController.post('/user', userAdd);
-groupController.delete('/user', userRemove);
+groupController.post('/user', sec.getUserFromToken, sec.userShouldBeAdmin, service.userAdd);
+groupController.delete('/user', sec.getUserFromToken, sec.userShouldBeAdmin, service.userRemove);
