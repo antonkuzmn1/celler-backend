@@ -76,10 +76,8 @@ export const getUserByReq = async (req: Request) => {
     }
 
     const user = await prisma.user.findUnique({
-        where: {
-            id: userId,
-            deleted: 0,
-        },
+        where: {id: userId, deleted: 0},
+        include: {userGroups: {include: {group: true}}}
     });
     if (!user) {
         return null;
@@ -105,10 +103,14 @@ export const checkTokenForValidMiddleware = async (req: Request, res: Response, 
     try {
         const user = await getUserByReq(req);
         if (!user) {
-            return res.status(400).json({ message: 'Token is not valid' });
+            return res.status(400).json({message: 'Token is not valid'});
         }
         next();
     } catch (error) {
-        return res.status(500).json({ message: 'Internal server error' });
+        return res.status(500).json({message: 'Internal server error'});
     }
+}
+
+export const isAllowedGroups = async () => {
+
 }

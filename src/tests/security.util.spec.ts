@@ -1,4 +1,4 @@
-import {generateToken, getDataFromToken} from "./security.util";
+import {generateToken, getDataFromToken} from "../utils/security.util";
 
 describe('security.util.ts', () => {
     beforeEach(() => {

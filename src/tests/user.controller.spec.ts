@@ -248,7 +248,7 @@ describe('/api/user', () => {
             const response = await request(app)
                 .post('/api/user/group')
                 .set('Authorization', `Bearer ${tokenRoot}`)
-                .send({userId: 2, groupId: 1})
+                .send({userId: 2, groupId: 3})
                 .expect('Content-Type', /json/)
                 .expect(201);
 
