@@ -1,6 +1,7 @@
 import {Router} from 'express';
 import {authController} from './controllers/auth.controller';
 import {userController} from "./controllers/user.controller";
+import {groupController} from "./controllers/group.controller";
 import {tableController} from "./controllers/table.controller";
 import {columnController} from "./controllers/column.controller";
 import {rowController} from "./controllers/row.controller";
@@ -11,7 +12,7 @@ export const router = Router();
 
 router.use('/auth', authController);
 router.use('/user', userController);
-router.use('/users', userController);
+router.use('/group', groupController);
 router.use('/table', tableController);
 router.use('/column', columnController);
 router.use('/row', rowController);
