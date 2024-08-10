@@ -82,7 +82,7 @@ describe('/api/user', () => {
                 .expect('Content-Type', /json/)
                 .expect(201);
 
-            expect(response.body.username).toBe(randomExtended);
+            expect(response.body.newValue.username).toBe(randomExtended);
         });
     });
 

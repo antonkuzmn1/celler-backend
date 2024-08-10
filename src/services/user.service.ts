@@ -2,7 +2,6 @@ import {Request, Response} from 'express';
 import {prisma} from '../prisma';
 import {getUserByReq} from "../utils/security.util";
 import bcrypt from "bcrypt";
-import { Prisma } from '@prisma/client';
 
 export const get = async (_req: Request, res: Response) => {
     const users = await prisma.user.findMany({
@@ -41,7 +40,7 @@ export const get = async (_req: Request, res: Response) => {
         }
     });
     res.status(200).json(mappedUsers);
-}
+};
 
 export const create = async (req: Request, res: Response) => {
     const {admin, username, password, name, title} = req.body;
@@ -74,12 +73,12 @@ export const create = async (req: Request, res: Response) => {
                 newValue: createdUser,
             },
         });
-        res.status(201).json({id: createdUser.id, username: createdUser.username});
+        res.status(201).json({newValue: createdUser});
     } catch (error) {
         console.error(error);
         res.status(500).json({message: 'Error creating user'});
     }
-}
+};
 
 export const edit = async (req: Request, res: Response) => {
     const {id, admin, username, password, name, title} = req.body;
@@ -93,8 +92,7 @@ export const edit = async (req: Request, res: Response) => {
         return res.status(400).json({message: 'Username and password are required'});
     }
 
-    const isAdmin = user.admin;
-    if (!isAdmin) {
+    if (!user.admin) {
         if (user.id !== id) {
             return res.status(403).json({message: 'Access denied'});
         }
@@ -168,7 +166,7 @@ export const edit = async (req: Request, res: Response) => {
     } catch (error) {
         res.status(500).json({message: 'Error creating user'});
     }
-}
+};
 
 export const remove = async (req: Request, res: Response) => {
     const user = await getUserByReq(req);
@@ -211,7 +209,7 @@ export const remove = async (req: Request, res: Response) => {
     } catch (error) {
         res.status(500).json({message: 'Error creating user'});
     }
-}
+};
 
 export const groupAdd = async (req: Request, res: Response) => {
 
