@@ -1,6 +1,6 @@
 import {Router} from "express";
 import {GroupService} from "../services/group.service";
-import SecurityMiddleware from "../middleware/security.middleware";
+import {SecurityMiddleware} from "../middleware/security.middleware";
 
 const sec = new SecurityMiddleware();
 const service = new GroupService();

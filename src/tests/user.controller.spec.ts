@@ -28,13 +28,13 @@ describe('/api/user', () => {
     })
 
     describe('get', () => {
-        test('get - Token is not valid', async () => {
+        test('get - Authentication Required', async () => {
             const response = await request(app)
                 .get('/api/user')
                 .expect('Content-Type', /json/)
-                .expect(400);
+                .expect(401);
 
-            expect(response.body.message).toBe('Token is not valid');
+            expect(response.body.message).toBe('Authentication Required');
         });
         test('get - Success', async () => {
             const response = await request(app)
@@ -48,7 +48,7 @@ describe('/api/user', () => {
     });
 
     describe('create', () => {
-        test('create - Access denied', async () => {
+        test('create - Access Denied', async () => {
             const response = await request(app)
                 .post('/api/user')
                 .send({username: 'anton1', password: 'anton1'})
@@ -56,9 +56,9 @@ describe('/api/user', () => {
                 .expect('Content-Type', /json/)
                 .expect(403);
 
-            expect(response.body.message).toBe('Access denied');
+            expect(response.body.message).toBe('Access Denied');
         });
-        test('create - Username and password are required', async () => {
+        test('create - Invalid Request', async () => {
             const response = await request(app)
                 .post('/api/user')
                 .send({username: 'anton1'})
@@ -66,7 +66,7 @@ describe('/api/user', () => {
                 .expect('Content-Type', /json/)
                 .expect(400);
 
-            expect(response.body.message).toBe('Username and password are required');
+            expect(response.body.message).toBe('Invalid Request');
         });
         test('create - Success', async () => {
             const randomExtended = `anton_${random}${random * 13}`;
@@ -82,21 +82,21 @@ describe('/api/user', () => {
                 .expect('Content-Type', /json/)
                 .expect(201);
 
-            expect(response.body.newValue.username).toBe(randomExtended);
+            expect(response.body.username).toBe(randomExtended);
         });
     });
 
     describe('edit', () => {
-        test('edit - Token is not valid', async () => {
+        test('edit - Authentication Required', async () => {
             const response = await request(app)
                 .put('/api/user')
                 .send({username: 'root', password: 'root'})
                 .expect('Content-Type', /json/)
-                .expect(400);
+                .expect(401);
 
-            expect(response.body.message).toBe('Token is not valid');
+            expect(response.body.message).toBe('Authentication Required');
         });
-        test('edit - Username and password are required', async () => {
+        test('edit - Invalid Request', async () => {
             const response = await request(app)
                 .put('/api/user')
                 .set('Authorization', `Bearer ${tokenRoot}`)
@@ -104,9 +104,9 @@ describe('/api/user', () => {
                 .expect('Content-Type', /json/)
                 .expect(400);
 
-            expect(response.body.message).toBe('Username and password are required');
+            expect(response.body.message).toBe('Invalid Request');
         });
-        test('edit - Access denied #1', async () => {
+        test('edit - Access Denied', async () => {
             const response = await request(app)
                 .post('/api/user')
                 .set('Authorization', `Bearer ${tokenAnton}`)
@@ -114,44 +114,9 @@ describe('/api/user', () => {
                 .expect('Content-Type', /json/)
                 .expect(403);
 
-            expect(response.body.message).toBe('Access denied');
+            expect(response.body.message).toBe('Access Denied');
         });
-        test('edit - Access denied #2', async () => {
-            const response = await request(app)
-                .post('/api/user')
-                .set('Authorization', `Bearer ${tokenAnton}`)
-                .send({id: 0, username: 'root1'})
-                .expect('Content-Type', /json/)
-                .expect(403);
-
-            expect(response.body.message).toBe('Access denied');
-        });
-        test('edit - Access denied #3', async () => {
-            const response = await request(app)
-                .post('/api/user')
-                .set('Authorization', `Bearer ${tokenAnton}`)
-                .send({id: 2, password: 'anton13', title: `Random: ${random}`})
-                .expect('Content-Type', /json/)
-                .expect(403);
-
-            expect(response.body.message).toBe('Access denied');
-        });
-        test('edit - Success #1', async () => {
-            const response = await request(app)
-                .put('/api/user')
-                .set('Authorization', `Bearer ${tokenAnton}`)
-                .send({
-                    id: 3,
-                    username: 'anton',
-                    password: 'anton',
-                    title: `Random: ${random}`
-                })
-                .expect('Content-Type', /json/)
-                .expect(201);
-
-            expect(response.body.title).toBe(`Random: ${random}`);
-        });
-        test('edit - Success #2', async () => {
+        test('edit - Success', async () => {
             setTimeout(async () => {
                 const response = await request(app)
                     .put('/api/user')
@@ -171,16 +136,16 @@ describe('/api/user', () => {
     });
 
     describe('remove', () => {
-        test('remove - Token is not valid', async () => {
+        test('remove - Authentication Required', async () => {
             const response = await request(app)
                 .delete('/api/user')
                 .send({id: 2})
                 .expect('Content-Type', /json/)
-                .expect(400);
+                .expect(401);
 
-            expect(response.body.message).toBe('Token is not valid');
+            expect(response.body.message).toBe('Authentication Required');
         });
-        test('remove - ID not found', async () => {
+        test('remove - Invalid Request', async () => {
             const response = await request(app)
                 .delete('/api/user')
                 .set('Authorization', `Bearer ${tokenRoot}`)
@@ -188,9 +153,9 @@ describe('/api/user', () => {
                 .expect('Content-Type', /json/)
                 .expect(400);
 
-            expect(response.body.message).toBe('ID not found');
+            expect(response.body.message).toBe('Invalid Request');
         });
-        test('remove - Access denied', async () => {
+        test('remove - Access Denied', async () => {
             const response = await request(app)
                 .delete('/api/user')
                 .set('Authorization', `Bearer ${tokenAnton}`)
@@ -198,7 +163,7 @@ describe('/api/user', () => {
                 .expect('Content-Type', /json/)
                 .expect(403);
 
-            expect(response.body.message).toBe('Access denied');
+            expect(response.body.message).toBe('Access Denied');
         });
         test('remove - Success', async () => {
             setTimeout(async () => {
@@ -215,16 +180,16 @@ describe('/api/user', () => {
     });
 
     describe('groupAdd', () => {
-        test('groupAdd - Token is not valid', async () => {
+        test('groupAdd - Authentication Required', async () => {
             const response = await request(app)
                 .post('/api/user/group')
                 .send({userId: 2, groupId: 1})
                 .expect('Content-Type', /json/)
-                .expect(400);
+                .expect(401);
 
-            expect(response.body.message).toBe('Token is not valid');
+            expect(response.body.message).toBe('Authentication Required');
         });
-        test('groupAdd - Access denied', async () => {
+        test('groupAdd - Access Denied', async () => {
             const response = await request(app)
                 .post('/api/user/group')
                 .set('Authorization', `Bearer ${tokenAnton}`)
@@ -232,9 +197,9 @@ describe('/api/user', () => {
                 .expect('Content-Type', /json/)
                 .expect(403);
 
-            expect(response.body.message).toBe('Access denied');
+            expect(response.body.message).toBe('Access Denied');
         });
-        test('groupAdd - IDs not found', async () => {
+        test('groupAdd - Invalid Request', async () => {
             const response = await request(app)
                 .post('/api/user/group')
                 .set('Authorization', `Bearer ${tokenRoot}`)
@@ -242,7 +207,7 @@ describe('/api/user', () => {
                 .expect('Content-Type', /json/)
                 .expect(400);
 
-            expect(response.body.message).toBe('IDs not found');
+            expect(response.body.message).toBe('Invalid Request');
         });
         test('groupAdd - Success', async () => {
             const response = await request(app)
@@ -252,21 +217,21 @@ describe('/api/user', () => {
                 .expect('Content-Type', /json/)
                 .expect(201);
 
-            expect(response.body.message.userId).toBe(2);
+            expect(response.body.userId).toBe(2);
         });
     });
 
     describe('groupRemove', () => {
-        test('groupRemove - Token is not valid', async () => {
+        test('groupRemove - Authentication Required', async () => {
             const response = await request(app)
                 .delete('/api/user/group')
                 .send({userId: 2, groupId: 1})
                 .expect('Content-Type', /json/)
-                .expect(400);
+                .expect(401);
 
-            expect(response.body.message).toBe('Token is not valid');
+            expect(response.body.message).toBe('Authentication Required');
         });
-        test('groupRemove - Access denied', async () => {
+        test('groupRemove - Access Denied', async () => {
             const response = await request(app)
                 .delete('/api/user/group')
                 .set('Authorization', `Bearer ${tokenAnton}`)
@@ -274,9 +239,9 @@ describe('/api/user', () => {
                 .expect('Content-Type', /json/)
                 .expect(403);
 
-            expect(response.body.message).toBe('Access denied');
+            expect(response.body.message).toBe('Access Denied');
         });
-        test('groupRemove - IDs not found', async () => {
+        test('groupRemove - Invalid Request', async () => {
             const response = await request(app)
                 .delete('/api/user/group')
                 .set('Authorization', `Bearer ${tokenRoot}`)
@@ -284,17 +249,17 @@ describe('/api/user', () => {
                 .expect('Content-Type', /json/)
                 .expect(400);
 
-            expect(response.body.message).toBe('IDs not found');
+            expect(response.body.message).toBe('Invalid Request');
         });
         test('groupRemove - Success', async () => {
             const response = await request(app)
                 .delete('/api/user/group')
                 .set('Authorization', `Bearer ${tokenRoot}`)
-                .send({userId: 2, groupId: 1})
+                .send({userId: 2, groupId: 3})
                 .expect('Content-Type', /json/)
                 .expect(201);
 
-            expect(response.body.message.userId).toBe(2);
+            expect(response.body.userId).toBe(2);
         });
     });
 

@@ -4,7 +4,7 @@ import {prisma} from "../prisma";
 import {errorResponse} from "../utils/errorResponses.util";
 import {logger} from "../logger";
 
-export default class SecurityMiddleware {
+export class SecurityMiddleware {
     JWTSecret?: string = process.env.JWT_SECRET;
 
     constructor() {
