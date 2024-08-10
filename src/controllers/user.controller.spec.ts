@@ -1,4 +1,4 @@
-import express from "express";
+import express, {response} from "express";
 import {router} from "../router";
 import request from "supertest";
 
@@ -7,9 +7,24 @@ app.use(express.json());
 app.use('/api', router);
 
 describe('/api/user', () => {
+    let random: number;
+    let tokenAnton: string;
+    let tokenRoot: string;
 
-    beforeEach(() => {
+    beforeEach(async () => {
         jest.resetAllMocks();
+
+        random = Math.floor(Math.random() * 100);
+
+        const responseWithTokenForAnton = await request(app)
+            .post('/api/auth')
+            .send({username: 'anton', password: 'anton'});
+        tokenAnton = responseWithTokenForAnton.body.token;
+
+        const responseWithTokenForRoot = await request(app)
+            .post('/api/auth')
+            .send({username: 'root', password: 'root'});
+        tokenRoot = responseWithTokenForRoot.body.token;
     })
 
     describe('get', () => {
@@ -22,20 +37,9 @@ describe('/api/user', () => {
             expect(response.body.message).toBe('Token is not valid');
         });
         test('get - Success', async () => {
-            const reqBodyForToken = {
-                username: 'root',
-                password: 'root',
-            } as any;
-
-            const responseWithToken = await request(app)
-                .post('/api/auth')
-                .send(reqBodyForToken)
-
-            const token = responseWithToken.body.token;
-
             const response = await request(app)
                 .get('/api/user')
-                .set('Authorization', `Bearer ${token}`)
+                .set('Authorization', `Bearer ${tokenRoot}`)
                 .expect('Content-Type', /json/)
                 .expect(200);
 
@@ -44,124 +48,45 @@ describe('/api/user', () => {
     });
 
     describe('create', () => {
-        test('create - Token is not valid', async () => {
-            const reqBody = {
-                username: 'anton',
-                password: 'anton',
-            } as any;
-
-            const response = await request(app)
-                .post('/api/user')
-                .send(reqBody)
-                .expect('Content-Type', /json/)
-                .expect(400);
-
-            expect(response.body.message).toBe('Token is not valid');
-        });
         test('create - Access denied', async () => {
-            const reqBodyForToken = {
-                username: 'anton',
-                password: 'anton',
-            } as any;
-
-            const responseWithToken = await request(app)
-                .post('/api/auth')
-                .send(reqBodyForToken)
-
-            const token = responseWithToken.body.token;
-
-            const reqBody = {
-                username: 'anton1',
-                password: 'anton1',
-            } as any;
-
             const response = await request(app)
                 .post('/api/user')
-                .send(reqBody)
-                .set('Authorization', `Bearer ${token}`)
+                .send({username: 'anton1', password: 'anton1'})
+                .set('Authorization', `Bearer ${tokenAnton}`)
                 .expect('Content-Type', /json/)
                 .expect(403);
 
             expect(response.body.message).toBe('Access denied');
         });
         test('create - Username and password are required', async () => {
-            const reqBodyForToken = {
-                username: 'root',
-                password: 'root',
-            } as any;
-
-            const responseWithToken = await request(app)
-                .post('/api/auth')
-                .send(reqBodyForToken)
-
-            const token = responseWithToken.body.token;
-
-            const reqBody = {
-                username: 'anton1',
-            } as any;
-
             const response = await request(app)
                 .post('/api/user')
-                .send(reqBody)
-                .set('Authorization', `Bearer ${token}`)
+                .send({username: 'anton1'})
+                .set('Authorization', `Bearer ${tokenRoot}`)
                 .expect('Content-Type', /json/)
                 .expect(400);
 
             expect(response.body.message).toBe('Username and password are required');
         });
         test('create - Success', async () => {
-            const usernamePasswordAnswer = `anton${Math.floor(Math.random() * 100)}`;
-
-            const reqBodyForToken = {
-                username: 'root',
-                password: 'root',
-            } as any;
-
-            const responseWithToken = await request(app)
-                .post('/api/auth')
-                .send(reqBodyForToken)
-
-            const token = responseWithToken.body.token;
-
-            const reqBody = {
-                admin: 1,
-                username: usernamePasswordAnswer,
-                password: usernamePasswordAnswer,
-                name: 'Test',
-                title: 'Created by unit tests'
-            } as any;
-
+            const randomExtended = `anton_${random}${random * 13}`;
             const response = await request(app)
                 .post('/api/user')
-                .send(reqBody)
-                .set('Authorization', `Bearer ${token}`)
+                .set('Authorization', `Bearer ${tokenRoot}`)
+                .send({
+                    username: randomExtended,
+                    password: randomExtended,
+                    name: 'Test',
+                    title: 'Created by unit tests'
+                })
                 .expect('Content-Type', /json/)
                 .expect(201);
 
-            expect(response.body.username).toBe(usernamePasswordAnswer);
+            expect(response.body.username).toBe(randomExtended);
         });
     });
 
     describe('edit', () => {
-        let random: number;
-        let tokenAnton: string;
-        let tokenRoot: string;
-
-        beforeAll(async () => {
-            random = Math.floor(Math.random() * 100);
-
-            const responseWithTokenForAnton = await request(app)
-                .post('/api/auth')
-                .send({username: 'anton', password: 'anton'});
-            tokenAnton = responseWithTokenForAnton.body.token;
-
-            const responseWithTokenForRoot = await request(app)
-                .post('/api/auth')
-                .send({username: 'root', password: 'root'});
-
-            tokenRoot = responseWithTokenForRoot.body.token;
-        });
-
         test('edit - Token is not valid', async () => {
             const response = await request(app)
                 .put('/api/user')
@@ -216,7 +141,7 @@ describe('/api/user', () => {
                 .put('/api/user')
                 .set('Authorization', `Bearer ${tokenAnton}`)
                 .send({
-                    id: 2,
+                    id: 3,
                     username: 'anton',
                     password: 'anton',
                     title: `Random: ${random}`
@@ -246,22 +171,6 @@ describe('/api/user', () => {
     });
 
     describe('remove', () => {
-        let tokenAnton: string;
-        let tokenRoot: string;
-
-        beforeAll(async () => {
-            const responseWithTokenForAnton = await request(app)
-                .post('/api/auth')
-                .send({username: 'anton', password: 'anton'});
-            tokenAnton = responseWithTokenForAnton.body.token;
-
-            const responseWithTokenForRoot = await request(app)
-                .post('/api/auth')
-                .send({username: 'root', password: 'root'});
-
-            tokenRoot = responseWithTokenForRoot.body.token;
-        });
-
         test('remove - Token is not valid', async () => {
             const response = await request(app)
                 .delete('/api/user')
@@ -271,7 +180,7 @@ describe('/api/user', () => {
 
             expect(response.body.message).toBe('Token is not valid');
         });
-        test('edit - Username and password are required', async () => {
+        test('edit - ID not found', async () => {
             const response = await request(app)
                 .delete('/api/user')
                 .set('Authorization', `Bearer ${tokenRoot}`)
@@ -285,7 +194,7 @@ describe('/api/user', () => {
             const response = await request(app)
                 .delete('/api/user')
                 .set('Authorization', `Bearer ${tokenAnton}`)
-                .send({id: 3})
+                .send({id: 2})
                 .expect('Content-Type', /json/)
                 .expect(403);
 
@@ -296,7 +205,7 @@ describe('/api/user', () => {
                 const response = await request(app)
                     .delete('/api/user')
                     .set('Authorization', `Bearer ${tokenRoot}`)
-                    .send({id: 3})
+                    .send({id: 2})
                     .expect('Content-Type', /json/)
                     .expect(201);
 

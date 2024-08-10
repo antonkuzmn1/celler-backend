@@ -2,6 +2,7 @@ import {Request, Response} from 'express';
 import {prisma} from '../prisma';
 import {getUserByReq} from "../utils/security.util";
 import bcrypt from "bcrypt";
+import { Prisma } from '@prisma/client';
 
 export const get = async (_req: Request, res: Response) => {
     const users = await prisma.user.findMany({
@@ -43,24 +44,20 @@ export const get = async (_req: Request, res: Response) => {
 }
 
 export const create = async (req: Request, res: Response) => {
-    const user = await getUserByReq(req);
-    if (!user) {
-        return res.status(400).json({message: 'Token is not valid'});
-    }
+    const {admin, username, password, name, title} = req.body;
 
-    const isAdmin = user.admin;
-    if (!isAdmin) {
+    const user = await getUserByReq(req);
+    if (!user || !user.admin) {
         return res.status(403).json({message: 'Access denied'});
     }
 
-    const {admin, username, password, name, title} = req.body;
     if (!username || !password) {
         return res.status(400).json({message: 'Username and password are required'});
     }
 
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
-        const user = await prisma.user.create({
+        const createdUser = await prisma.user.create({
             data: {
                 admin: admin,
                 username: username,
@@ -69,19 +66,29 @@ export const create = async (req: Request, res: Response) => {
                 title: title,
             },
         });
-        res.status(201).json({id: user.id, username: user.username});
+        await prisma.log.create({
+            data: {
+                action: 'create',
+                initiatorId: user.id,
+                targetId: createdUser.id,
+                newValue: createdUser,
+            },
+        });
+        res.status(201).json({id: createdUser.id, username: createdUser.username});
     } catch (error) {
+        console.error(error);
         res.status(500).json({message: 'Error creating user'});
     }
 }
 
 export const edit = async (req: Request, res: Response) => {
+    const {id, admin, username, password, name, title} = req.body;
+
     const user = await getUserByReq(req);
     if (!user) {
         return res.status(400).json({message: 'Token is not valid'});
     }
 
-    const {id, admin, username, password, name, title} = req.body;
     if (!username || !password) {
         return res.status(400).json({message: 'Username and password are required'});
     }
@@ -104,7 +111,7 @@ export const edit = async (req: Request, res: Response) => {
             }
 
             const hashedPassword = await bcrypt.hash(password, 10);
-            const result = await prisma.user.update({
+            const updatedUser = await prisma.user.update({
                 where: {id},
                 data: {
                     username: username,
@@ -113,11 +120,19 @@ export const edit = async (req: Request, res: Response) => {
                     title: title,
                 },
             });
+            await prisma.log.create({
+                data: {
+                    action: 'update',
+                    initiatorId: user.id,
+                    targetId: updatedUser.id,
+                    newValue: updatedUser,
+                },
+            });
             res.status(201).json({
-                id: result.id,
-                username: result.username,
-                name: result.name,
-                title: result.title,
+                id: updatedUser.id,
+                username: updatedUser.username,
+                name: updatedUser.name,
+                title: updatedUser.title,
             });
         } catch (error) {
             res.status(500).json({message: 'Error creating user'});
@@ -126,7 +141,7 @@ export const edit = async (req: Request, res: Response) => {
 
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
-        const result = await prisma.user.update({
+        const updatedUser = await prisma.user.update({
             where: {id},
             data: {
                 admin: admin,
@@ -136,11 +151,19 @@ export const edit = async (req: Request, res: Response) => {
                 title: title,
             },
         });
+        await prisma.log.create({
+            data: {
+                action: 'update',
+                initiatorId: user.id,
+                targetId: updatedUser.id,
+                newValue: updatedUser,
+            },
+        });
         res.status(201).json({
-            id: result.id,
-            username: result.username,
-            name: result.name,
-            title: result.title,
+            id: updatedUser.id,
+            username: updatedUser.username,
+            name: updatedUser.name,
+            title: updatedUser.title,
         });
     } catch (error) {
         res.status(500).json({message: 'Error creating user'});
@@ -164,18 +187,26 @@ export const remove = async (req: Request, res: Response) => {
     }
 
     try {
-        const result = await prisma.user.update({
+        const deletedUser = await prisma.user.update({
             where: {id},
             data: {
                 deleted: 1,
             },
         });
+        await prisma.log.create({
+            data: {
+                action: 'delete',
+                initiatorId: user.id,
+                targetId: deletedUser.id,
+                newValue: deletedUser,
+            },
+        });
         res.status(201).json({
-            id: result.id,
-            username: result.username,
-            name: result.name,
-            title: result.title,
-            deleted: result.deleted,
+            id: deletedUser.id,
+            username: deletedUser.username,
+            name: deletedUser.name,
+            title: deletedUser.title,
+            deleted: deletedUser.deleted,
         });
     } catch (error) {
         res.status(500).json({message: 'Error creating user'});
