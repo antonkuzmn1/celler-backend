@@ -144,7 +144,7 @@ model Log {
   created DateTime @default(now()) @db.Timestamp(0)
 
   action   String @db.Char(100)
-  newValue Json?  @default("[]")
+  newValue Json?
 
   initiatorId Int
   targetId    Int?
