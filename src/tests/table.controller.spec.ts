@@ -28,13 +28,13 @@ describe('/api/table', () => {
     })
 
     describe('get', () => {
-        test('get - Token is not valid', async () => {
+        test('get - Authentication Required', async () => {
             const response = await request(app)
                 .get('/api/table')
                 .expect('Content-Type', /json/)
-                .expect(400);
+                .expect(401);
 
-            expect(response.body.message).toBe('Token is not valid');
+            expect(response.body.message).toBe('Authentication Required');
         });
         test('get - Success', async () => {
             const response = await request(app)
@@ -44,7 +44,7 @@ describe('/api/table', () => {
                 .expect('Content-Type', /json/)
                 .expect(200);
 
-            console.log(response.body.message);
+            console.log(response.body);
         });
         test('get - Success for Root', async () => {
             const response = await request(app)
@@ -54,12 +54,12 @@ describe('/api/table', () => {
                 .expect('Content-Type', /json/)
                 .expect(200);
 
-            console.log(response.body.message);
+            console.log(response.body);
         });
     });
 
     describe('create', () => {
-        test('create - Access denied', async () => {
+        test('create - Access Denied', async () => {
             const response = await request(app)
                 .post('/api/table')
                 .send({name: 'table1', title: 'table1'})
@@ -67,9 +67,9 @@ describe('/api/table', () => {
                 .expect('Content-Type', /json/)
                 .expect(403);
 
-            expect(response.body.message).toBe('Access denied');
+            expect(response.body.message).toBe('Access Denied');
         });
-        test('create - Name is required', async () => {
+        test('create - Invalid Request', async () => {
             const response = await request(app)
                 .post('/api/table')
                 .send({title: 'table1'})
@@ -77,7 +77,7 @@ describe('/api/table', () => {
                 .expect('Content-Type', /json/)
                 .expect(400);
 
-            expect(response.body.message).toBe('Name is required');
+            expect(response.body.message).toBe('Invalid Request');
         });
         test('create - Success', async () => {
             const randomExtended = `${random}${random * 13}`;
@@ -91,21 +91,21 @@ describe('/api/table', () => {
                 .expect('Content-Type', /json/)
                 .expect(201);
 
-            expect(response.body.message.name).toBe(`Test Table #${randomExtended}`);
+            expect(response.body.name).toBe(`Test Table #${randomExtended}`);
         });
     });
 
     describe('edit', () => {
-        test('edit - Token is not valid', async () => {
+        test('edit - Authentication Required', async () => {
             const response = await request(app)
                 .put('/api/table')
                 .send({name: 'table1', title: 'table1'})
                 .expect('Content-Type', /json/)
-                .expect(403);
+                .expect(401);
 
-            expect(response.body.message).toBe('Token is not valid');
+            expect(response.body.message).toBe('Authentication Required');
         });
-        test('edit - ID and Name is required', async () => {
+        test('edit - Invalid Request', async () => {
             const response = await request(app)
                 .put('/api/table')
                 .set('Authorization', `Bearer ${tokenRoot}`)
@@ -113,7 +113,7 @@ describe('/api/table', () => {
                 .expect('Content-Type', /json/)
                 .expect(400);
 
-            expect(response.body.message).toBe('ID and Name is required');
+            expect(response.body.message).toBe('Invalid Request');
         });
         test('edit - Success', async () => {
             const response = await request(app)
@@ -123,21 +123,21 @@ describe('/api/table', () => {
                 .expect('Content-Type', /json/)
                 .expect(201);
 
-            expect(response.body.message.title).toBe(`Random13: ${random}`);
+            expect(response.body.title).toBe(`Random13: ${random}`);
         });
     });
 
     describe('remove', () => {
-        test('remove - Token is not valid', async () => {
+        test('remove - Authentication Required', async () => {
             const response = await request(app)
                 .delete('/api/table')
                 .send({id: 2})
                 .expect('Content-Type', /json/)
-                .expect(403);
+                .expect(401);
 
-            expect(response.body.message).toBe('Token is not valid');
+            expect(response.body.message).toBe('Authentication Required');
         });
-        test('remove - ID is required', async () => {
+        test('remove - Invalid Request', async () => {
             const response = await request(app)
                 .delete('/api/table')
                 .set('Authorization', `Bearer ${tokenRoot}`)
@@ -145,7 +145,7 @@ describe('/api/table', () => {
                 .expect('Content-Type', /json/)
                 .expect(400);
 
-            expect(response.body.message).toBe('ID is required');
+            expect(response.body.message).toBe('Invalid Request');
         });
         test('remove - Success', async () => {
             setTimeout(async () => {
@@ -156,22 +156,22 @@ describe('/api/table', () => {
                     .expect('Content-Type', /json/)
                     .expect(201);
 
-                expect(response.body.message.deleted).toBe(1);
+                expect(response.body.deleted).toBe(1);
             }, 500);
         });
     });
 
     describe('groupAdd', () => {
-        test('groupAdd - Token is not valid', async () => {
+        test('groupAdd - Authentication Required', async () => {
             const response = await request(app)
                 .post('/api/table/group')
                 .send({tableId: 1, groupId: 1})
                 .expect('Content-Type', /json/)
-                .expect(403);
+                .expect(401);
 
-            expect(response.body.message).toBe('Token is not valid');
+            expect(response.body.message).toBe('Authentication Required');
         });
-        test('groupAdd - IDs not found', async () => {
+        test('groupAdd - Invalid Request', async () => {
             const response = await request(app)
                 .post('/api/table/group')
                 .set('Authorization', `Bearer ${tokenRoot}`)
@@ -179,7 +179,7 @@ describe('/api/table', () => {
                 .expect('Content-Type', /json/)
                 .expect(400);
 
-            expect(response.body.message).toBe('IDs not found');
+            expect(response.body.message).toBe('Invalid Request');
         });
         test('groupAdd - Success', async () => {
             const response = await request(app)
@@ -189,21 +189,21 @@ describe('/api/table', () => {
                 .expect('Content-Type', /json/)
                 .expect(201);
 
-            expect(response.body.message.tableId).toBe(4);
+            expect(response.body.tableId).toBe(4);
         });
     });
 
     describe('groupRemove', () => {
-        test('groupRemove - Token is not valid', async () => {
+        test('groupRemove - Authentication Required', async () => {
             const response = await request(app)
                 .delete('/api/table/group')
                 .send({tableId: 1, groupId: 1})
                 .expect('Content-Type', /json/)
-                .expect(403);
+                .expect(401);
 
-            expect(response.body.message).toBe('Token is not valid');
+            expect(response.body.message).toBe('Authentication Required');
         });
-        test('groupRemove - IDs not found', async () => {
+        test('groupRemove - Invalid Request', async () => {
             const response = await request(app)
                 .delete('/api/table/group')
                 .set('Authorization', `Bearer ${tokenRoot}`)
@@ -211,17 +211,17 @@ describe('/api/table', () => {
                 .expect('Content-Type', /json/)
                 .expect(400);
 
-            expect(response.body.message).toBe('IDs not found');
+            expect(response.body.message).toBe('Invalid Request');
         });
         test('groupRemove - Success', async () => {
             const response = await request(app)
                 .delete('/api/table/group')
                 .set('Authorization', `Bearer ${tokenRoot}`)
-                .send({tableId: 1, groupId: 1})
+                .send({tableId: 4, groupId: 3})
                 .expect('Content-Type', /json/)
                 .expect(201);
 
-            expect(response.body.message.tableId).toBe(1);
+            expect(response.body.tableId).toBe(4);
         });
     });
 

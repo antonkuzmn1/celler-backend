@@ -100,7 +100,7 @@ export class GroupService {
         logger.info('GroupService.edit');
 
         const {id, name, title} = req.body;
-        if (!id || !name) {
+        if (!id) {
             return errorResponse(res, 400);
         }
 
@@ -160,67 +160,6 @@ export class GroupService {
         logger.info('GroupService.userRemove');
         const userGroupService = new UserGroupService();
         await userGroupService.remove(req, res);
-    }
-
-}
-
-export async function createTableGroup(initiatorId: number, tableId: number, groupId: number) {
-    const group = await prisma.group.findUnique({
-        where: {id: groupId},
-    });
-    if (!group) {
-        return {success: false, message: 'Group not found'};
-    }
-
-    const table = await prisma.table.findUnique({
-        where: {id: tableId},
-    });
-    if (!table) {
-        return {success: false, message: 'User not found'};
-    }
-
-    try {
-        const createdTableGroup = await prisma.tableGroup.create({
-            data: {tableId, groupId},
-        });
-        await prisma.log.create({
-            data: {
-                action: 'create',
-                initiatorId: initiatorId,
-                tableId: tableId,
-                groupId: groupId,
-                newValue: createdTableGroup,
-            },
-        });
-        return {success: true, message: createdTableGroup};
-    } catch (error) {
-        return {success: false, message: 'Error creating userGroup'};
-    }
-}
-
-export async function removeTableGroup(initiatorId: number, tableId: number, groupId: number) {
-    const userGroup = await prisma.tableGroup.findUnique({
-        where: {tableId_groupId: {tableId, groupId}},
-    });
-    if (!userGroup) {
-        return {success: false, message: 'User is not in the specified group'};
-    }
-
-    try {
-        const deletedTableGroup = await prisma.tableGroup.delete({
-            where: {tableId_groupId: {tableId, groupId}},
-        });
-        await prisma.log.create({
-            data: {
-                action: 'delete',
-                initiatorId: initiatorId,
-                tableId: tableId,
-                groupId: groupId,
-            },
-        });
-        return {success: true, message: deletedTableGroup};
-    } catch (error) {
-        return {success: false, message: 'Error removing userGroup'};
     }
 
 }
