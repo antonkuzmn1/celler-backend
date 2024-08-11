@@ -14,14 +14,14 @@ import {Response} from "express";
 export const errorResponse = (res: Response, code: 400 | 401 | 403 | 404 | 500) => {
     switch (code) {
         case 400:
-            return res.status(400).json({message: 'Invalid Request'});
+            return res.status(400).json('Invalid Request');
         case 401:
-            return res.status(401).json({message: 'Authentication Required'});
+            return res.status(401).json('Authentication Required');
         case 403:
-            return res.status(403).json({message: 'Access Denied'});
+            return res.status(403).json('Access Denied');
         case 404:
-            return res.status(404).json({message: 'Not Found'});
+            return res.status(404).json('Not Found');
         default:
-            return res.status(500).json({message: 'Internal Server Error'});
+            return res.status(500).json('Internal Server Error');
     }
 }
