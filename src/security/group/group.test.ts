@@ -162,88 +162,117 @@ describe('group', () => {
         });
     });
 
-    // describe('userAdd', () => {
-    //     test('userAdd - Authentication Required', async () => {
-    //         const response = await request(app)
-    //             .post('/api/group/user')
-    //             .send({userId: 2, groupId: 1})
-    //             .expect('Content-Type', /json/)
-    //             .expect(401);
-    //
-    //         expect(response.body.message).toBe('Authentication Required');
-    //     });
-    //     test('userAdd - Access Denied', async () => {
-    //         const response = await request(app)
-    //             .post('/api/group/user')
-    //             .set('Authorization', `Bearer ${tokenAnton}`)
-    //             .send({userId: 2, groupId: 1})
-    //             .expect('Content-Type', /json/)
-    //             .expect(403);
-    //
-    //         expect(response.body.message).toBe('Access Denied');
-    //     });
-    //     test('userAdd - Invalid Request', async () => {
-    //         const response = await request(app)
-    //             .post('/api/group/user')
-    //             .set('Authorization', `Bearer ${tokenRoot}`)
-    //             .send({userId: 0, groupId: 1})
-    //             .expect('Content-Type', /json/)
-    //             .expect(400);
-    //
-    //         expect(response.body.message).toBe('Invalid Request');
-    //     });
-    //     test('userAdd - Success', async () => {
-    //         const response = await request(app)
-    //             .post('/api/group/user')
-    //             .set('Authorization', `Bearer ${tokenRoot}`)
-    //             .send({userId: 2, groupId: 1})
-    //             .expect('Content-Type', /json/)
-    //             .expect(201);
-    //
-    //         expect(response.body.userId).toBe(2);
-    //     });
-    // });
+    describe('userAdd', () => {
+        let rat: TestGroup;
+        beforeAll(async () => {
+            rat = new TestGroup(app);
+            await rat.init();
+        }, 20000);
+        test('Should have a token', async () => {
+            await request(app)
+                .post(`${url}/user`)
+                .send({
+                    userId: user.id,
+                    groupId: rat.id,
+                })
+                .expect('Content-Type', /json/)
+                .expect(401);
+        });
+        test('Should be admin', async () => {
+            await request(app)
+                .post(`${url}/user`)
+                .set('Authorization', user.token)
+                .send({
+                    userId: user.id,
+                    groupId: rat.id,
+                })
+                .expect('Content-Type', /json/)
+                .expect(403);
+        });
+        test('ID cannot be null', async () => {
+            await request(app)
+                .post(`${url}/user`)
+                .set('Authorization', admin.token)
+                .send({
+                    userId: 0,
+                    groupId: rat.id,
+                })
+                .expect('Content-Type', /json/)
+                .expect(400);
+        });
+        test('Success', async () => {
+            const response = await request(app)
+                .post(`${url}/user`)
+                .set('Authorization', admin.token)
+                .send({
+                    userId: user.id,
+                    groupId: rat.id,
+                })
+                .expect('Content-Type', /json/)
+                .expect(201);
+            expect(response.body.userId).toBe(user.id);
+        });
+    });
 
-    // describe('userRemove', () => {
-    //     test('userRemove - Authentication Required', async () => {
-    //         const response = await request(app)
-    //             .delete('/api/group/user')
-    //             .send({userId: 2, groupId: 1})
-    //             .expect('Content-Type', /json/)
-    //             .expect(401);
-    //
-    //         expect(response.body.message).toBe('Authentication Required');
-    //     });
-    //     test('userRemove - Access Denied', async () => {
-    //         const response = await request(app)
-    //             .delete('/api/group/user')
-    //             .set('Authorization', `Bearer ${tokenAnton}`)
-    //             .send({userId: 2, groupId: 1})
-    //             .expect('Content-Type', /json/)
-    //             .expect(403);
-    //
-    //         expect(response.body.message).toBe('Access Denied');
-    //     });
-    //     test('userRemove - Invalid Request', async () => {
-    //         const response = await request(app)
-    //             .delete('/api/group/user')
-    //             .set('Authorization', `Bearer ${tokenRoot}`)
-    //             .send({userId: 0, groupId: 1})
-    //             .expect('Content-Type', /json/)
-    //             .expect(400);
-    //
-    //         expect(response.body.message).toBe('Invalid Request');
-    //     });
-    //     test('userRemove - Success', async () => {
-    //         const response = await request(app)
-    //             .delete('/api/group/user')
-    //             .set('Authorization', `Bearer ${tokenRoot}`)
-    //             .send({userId: 2, groupId: 1})
-    //             .expect('Content-Type', /json/)
-    //             .expect(201);
-    //
-    //         expect(response.body.userId).toBe(2);
-    //     });
-    // });
+    describe('userRemove', () => {
+        let rat: TestGroup;
+        beforeAll(async () => {
+            rat = new TestGroup(app);
+            await rat.init();
+        }, 20000);
+        test('Should have a token', async () => {
+            await request(app)
+                .delete(`${url}/user`)
+                .send({
+                    userId: user.id,
+                    groupId: rat.id,
+                })
+                .expect('Content-Type', /json/)
+                .expect(401);
+        });
+        test('Should be admin', async () => {
+            await request(app)
+                .delete(`${url}/user`)
+                .set('Authorization', user.token)
+                .send({
+                    userId: user.id,
+                    groupId: rat.id,
+                })
+                .expect('Content-Type', /json/)
+                .expect(403);
+        });
+        test('ID cannot be null', async () => {
+            await request(app)
+                .delete(`${url}/user`)
+                .set('Authorization', admin.token)
+                .send({
+                    userId: 0,
+                    groupId: rat.id,
+                })
+                .expect('Content-Type', /json/)
+                .expect(400);
+        });
+        test('Success', async () => {
+            await request(app)
+                .post(`${url}/user`)
+                .set('Authorization', admin.token)
+                .send({
+                    userId: user.id,
+                    groupId: rat.id,
+                })
+                .expect('Content-Type', /json/)
+                .expect(201);
+            const response = await request(app)
+                .delete(`${url}/user`)
+                .set('Authorization', admin.token)
+                .send({
+                    userId: user.id,
+                    groupId: rat.id,
+                })
+                .expect('Content-Type', /json/)
+                .expect(201);
+            expect(response.body.userId).toBe(user.id);
+        });
+    });
 
 });

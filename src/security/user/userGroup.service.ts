@@ -50,6 +50,7 @@ export class UserGroupService {
 
         const {userId, groupId} = req.body;
         if (!userId || !groupId) {
+            logger.error('User\'s or Group\' ID is undefined');
             return errorResponse(res, 400);
         }
 
@@ -57,6 +58,7 @@ export class UserGroupService {
             where: {userId_groupId: {userId, groupId}},
         });
         if (!userGroup) {
+            logger.error('User-Group not found');
             return errorResponse(res, 400);
         }
 
