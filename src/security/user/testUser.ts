@@ -2,7 +2,6 @@ import {Express} from "express";
 import request from "supertest";
 import {User} from "@prisma/client";
 import {logger} from "../../tools/logger";
-import bcrypt from "bcrypt";
 
 export class TestUser {
 
