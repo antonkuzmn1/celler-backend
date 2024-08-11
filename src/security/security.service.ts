@@ -1,7 +1,7 @@
 import {Request, Response} from 'express';
-import {logger} from "../logger/logger";
-import {errorResponse} from "./errorResponses.util";
-import {prisma} from "../prisma";
+import {logger} from "../tools/logger";
+import {errorResponse} from "../tools/errorResponses";
+import {prisma} from "../tools/prisma";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import {User} from "@prisma/client";
@@ -14,10 +14,11 @@ const JWT_SECRET = process.env.JWT_SECRET
 
 export class SecurityService {
     constructor() {
+        logger.debug('SecurityService');
     }
 
     async getTokenByCredentials(req: Request, res: Response): Promise<Response> {
-        logger.info('SecurityService.getTokenByCredentials');
+        logger.debug('SecurityService.getTokenByCredentials');
 
         if (!JWT_SECRET) {
             logger.error('JWT_SECRET is undefined');
@@ -51,7 +52,7 @@ export class SecurityService {
     }
 
     async getUserIdFromToken(req: Request, res: Response): Promise<Response> {
-        logger.info('SecurityService.getUserIdFromToken');
+        logger.debug('SecurityService.getUserIdFromToken');
 
         if (!JWT_SECRET) {
             logger.error('JWT_SECRET is undefined');

@@ -1,7 +1,7 @@
 import {Router} from 'express';
-import {securityController} from './security/security.controller';
-import {tableController} from "./table/table.controller";
-import {logController} from "./logger/log.controller";
+import {securityController} from '../security/security.controller';
+import {tableController} from "../table/table.controller";
+import {logController} from "../log/log.controller";
 
 export const router = Router();
 

@@ -1,8 +1,8 @@
 import {Request, Response} from 'express';
-import {prisma} from '../../prisma';
+import {prisma} from '../../tools/prisma';
 import bcrypt from "bcrypt";
-import {logger} from "../../logger/logger";
-import {errorResponse} from "../errorResponses.util";
+import {logger} from "../../tools/logger";
+import {errorResponse} from "../../tools/errorResponses";
 import {UserGroupService} from "../group/userGroup.service";
 
 export class UserService {

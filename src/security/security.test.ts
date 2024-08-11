@@ -1,5 +1,5 @@
 import express from "express";
-import {router} from "../router";
+import {router} from "../tools/router";
 import request from "supertest";
 import {TestUser} from "./user/testUser";
 

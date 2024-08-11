@@ -1,8 +1,8 @@
 import express, {Express} from 'express';
 import cors from 'cors';
-import {router} from './router';
-import {OnStartupActions} from "./onStartupActions";
-import {logger} from "./logger/logger";
+import {router} from './tools/router';
+import {OnStartupActions} from "./tools/onStartupActions";
+import {logger} from "./tools/logger";
 
 const app: Express = express();
 app.use(express.json());

@@ -1,7 +1,7 @@
 import {Request, Response} from 'express';
-import {prisma} from "../prisma";
-import {logger} from "../logger/logger";
-import {errorResponse} from "../security/errorResponses.util";
+import {prisma} from "../tools/prisma";
+import {logger} from "../tools/logger";
+import {errorResponse} from "../tools/errorResponses";
 import {TableGroupService} from "../security/group/tableGroup.service";
 
 export class TableService {
@@ -31,11 +31,11 @@ export class TableService {
         return res.status(200).json(tables);
     }
 
-    async getTable(req: Request, res: Response) {
-        if (!req.body.initiator.admin) {
-
-        }
-    }
+    // async getTable(req: Request, res: Response) {
+    //     if (!req.body.initiator.admin) {
+    //
+    //     }
+    // }
 
     async create(req: Request, res: Response) {
         logger.info('TableService.create');

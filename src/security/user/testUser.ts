@@ -1,7 +1,7 @@
 import {Express} from "express";
 import request from "supertest";
 import {User} from "@prisma/client";
-import {logger} from "../../logger/logger";
+import {logger} from "../../tools/logger";
 
 export class TestUser {
 

@@ -1,17 +1,18 @@
 import {NextFunction, Request, Response} from "express";
 import jwt from "jsonwebtoken";
-import {prisma} from "../prisma";
-import {errorResponse} from "./errorResponses.util";
-import {logger} from "../logger/logger";
+import {prisma} from "../tools/prisma";
+import {errorResponse} from "../tools/errorResponses";
+import {logger} from "../tools/logger";
 
 export class SecurityMiddleware {
     JWTSecret?: string = process.env.JWT_SECRET;
 
     constructor() {
+        logger.debug("SecurityMiddleware");
     }
 
     getUserFromToken = async (req: Request, res: Response, next: NextFunction) => {
-        logger.info("SecurityMiddleware.getUserFromToken");
+        logger.debug("SecurityMiddleware.getUserFromToken");
         if (!this.JWTSecret) {
             logger.error('JWT_SECRET is undefined');
             return errorResponse(res, 500);
@@ -26,7 +27,6 @@ export class SecurityMiddleware {
 
         try {
             const decodedToken = jwt.verify(token, this.JWTSecret) as any;
-            logger.info(decodedToken);
             if (!decodedToken || !decodedToken.id || typeof decodedToken.id !== 'number') {
                 logger.error('Decoded token is undefined');
                 return errorResponse(res, 401);
@@ -52,7 +52,7 @@ export class SecurityMiddleware {
     }
 
     userShouldBeAdmin = async (req: Request, res: Response, next: NextFunction) => {
-        logger.info("SecurityMiddleware.userShouldBeAdmin");
+        logger.debug("SecurityMiddleware.userShouldBeAdmin");
         const user = req.body.initiator;
         if (!user) {
             logger.error('User is undefined');
@@ -64,7 +64,7 @@ export class SecurityMiddleware {
             return errorResponse(res, 403);
         }
 
-        logger.info("User with admin");
+        logger.info("User is admin");
         next();
     }
 }

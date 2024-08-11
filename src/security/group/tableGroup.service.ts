@@ -1,7 +1,7 @@
 import {Request, Response} from "express";
-import {logger} from "../../logger/logger";
-import {errorResponse} from "../errorResponses.util";
-import {prisma} from "../../prisma";
+import {logger} from "../../tools/logger";
+import {errorResponse} from "../../tools/errorResponses";
+import {prisma} from "../../tools/prisma";
 
 export class TableGroupService {
     constructor() {

@@ -1,19 +1,19 @@
 import {prisma} from "./prisma";
 import bcrypt from "bcrypt";
-import {logger} from "./logger/logger";
+import {logger} from "./logger";
 
 export class OnStartupActions {
     constructor() {
-        logger.info("OnStartupActions");
+        logger.debug("OnStartupActions");
     }
 
     async runAll() {
-        logger.info("OnStartupActions.runAll");
+        logger.debug("OnStartupActions.runAll");
         await this.createRootIfNotExists();
     }
 
     async createRootIfNotExists(): Promise<boolean> {
-        logger.info("OnStartupActions.createRootIfNotExists");
+        logger.debug("OnStartupActions.createRootIfNotExists");
 
         const user = await prisma.user.findUnique({
             where: {id: 1, username: 'root'}

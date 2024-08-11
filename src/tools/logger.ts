@@ -9,7 +9,8 @@ const customFormat1: winston.Logform.Format = winston.format.combine(
 );
 
 export const logger: winston.Logger = winston.createLogger({
-    level: 'info',
+    level: 'debug',
+    // level: 'info',
     format: customFormat1,
     transports: [
         new winston.transports.Console(),
