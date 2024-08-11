@@ -1,6 +1,10 @@
 import {Router} from "express";
-import {get} from "./log.service";
+import {LogService} from "./log.service";
+import {SecurityMiddleware} from "../security/security.middleware";
+
+const service = new LogService();
+const sec = new SecurityMiddleware();
 
 export const logController = Router();
 
-logController.get('/', get);
+logController.get('/', sec.getUserFromToken, sec.userShouldBeAdmin, service.getAll);
