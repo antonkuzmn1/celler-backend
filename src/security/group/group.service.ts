@@ -23,52 +23,7 @@ export class GroupService {
             },
         });
 
-        const mappedGroups = groups.map((group) => {
-            return {
-                id: group.id,
-                created: group.created,
-                updated: group.updated,
-                name: group.name,
-                title: group.title,
-                userGroups: group.userGroups.filter((userGroup) => {
-                    return userGroup.user.deleted === 0
-                }).map((userGroup) => {
-                    return {
-                        id: userGroup.user.id,
-                        created: userGroup.user.created,
-                        updated: userGroup.user.updated,
-                        admin: userGroup.user.admin,
-                        username: userGroup.user.username,
-                        name: userGroup.user.name,
-                        title: userGroup.user.title,
-                    }
-                }),
-                tableGroups: group.tableGroups.filter((tableGroup) => {
-                    return tableGroup.table.deleted === 0
-                }).map((tableGroup) => {
-                    return {
-                        id: tableGroup.table.id,
-                        created: tableGroup.table.created,
-                        updated: tableGroup.table.updated,
-                        name: tableGroup.table.name,
-                        title: tableGroup.table.title,
-                    }
-                }),
-                columnGroups: group.columnGroups.filter((columnGroup) => {
-                    return columnGroup.column.deleted === 0
-                }).map((columnGroup) => {
-                    return {
-                        id: columnGroup.column.id,
-                        created: columnGroup.column.created,
-                        updated: columnGroup.column.updated,
-                        name: columnGroup.column.name,
-                        title: columnGroup.column.title,
-                    }
-                }),
-            }
-        });
-
-        return res.status(200).json(mappedGroups);
+        return res.status(200).json(groups);
     }
 
     async create(req: Request, res: Response) {
@@ -118,8 +73,9 @@ export class GroupService {
                     newValue: updatedGroup,
                 },
             });
-            return res.status(201).json({message: updatedGroup});
+            return res.status(201).json(updatedGroup);
         } catch (error) {
+            logger.error(error);
             return errorResponse(res, 500);
         }
     }

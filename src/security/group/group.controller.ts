@@ -7,7 +7,7 @@ const service = new GroupService();
 
 export const groupController = Router();
 
-groupController.get('/', sec.getUserFromToken, service.getAll);
+groupController.get('/', sec.getUserFromToken, sec.userShouldBeAdmin, service.getAll);
 groupController.post('/', sec.getUserFromToken, sec.userShouldBeAdmin, service.create);
 groupController.put('/', sec.getUserFromToken, sec.userShouldBeAdmin, service.edit);
 groupController.delete('/', sec.getUserFromToken, sec.userShouldBeAdmin, service.remove);
