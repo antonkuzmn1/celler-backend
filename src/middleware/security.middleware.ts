@@ -35,13 +35,13 @@ export class SecurityMiddleware {
             return errorResponse(res, 401);
         }
 
-        req.initiator = user;
+        req.body.initiator = user;
         next();
     }
 
     userShouldBeAdmin = async (req: Request, res: Response, next: NextFunction) => {
         logger.info("Getting user with admin");
-        const user = req.initiator;
+        const user = req.body.initiator;
         if (!user) {
             return errorResponse(res, 500);
         }

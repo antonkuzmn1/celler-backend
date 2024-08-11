@@ -32,7 +32,7 @@ export class TableGroupService {
             await prisma.log.create({
                 data: {
                     action: 'create',
-                    initiatorId: req.initiator.id,
+                    initiatorId: req.body.initiator.id,
                     tableId: tableId,
                     groupId: groupId,
                     newValue: tableGroup,
@@ -66,7 +66,7 @@ export class TableGroupService {
             await prisma.log.create({
                 data: {
                     action: 'delete',
-                    initiatorId: req.initiator.id,
+                    initiatorId: req.body.initiator.id,
                     tableId: tableId,
                     groupId: groupId,
                 },

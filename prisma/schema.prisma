@@ -89,8 +89,11 @@ model Column {
   Table Table @relation(fields: [tableId], references: [id])
 
   columnGroups ColumnGroup[]
+
   cells        Cell[]
   logs         Log[]
+
+  @@unique([tableId, order])
 }
 
 model ColumnGroup {

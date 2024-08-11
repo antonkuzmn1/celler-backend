@@ -20,8 +20,8 @@ export class TableService {
             }
         });
 
-        if (!req.initiator.admin) {
-            const initiatorGroupIds = req.initiator.userGroups.map(ug => ug.groupId);
+        if (!req.body.initiator.admin) {
+            const initiatorGroupIds = req.body.initiator.userGroups.map((ug: { groupId: any; }) => ug.groupId);
             const filteredTables = tables.filter(table =>
                 table.tableGroups.some(tg => initiatorGroupIds.includes(tg.groupId))
             );
@@ -49,7 +49,7 @@ export class TableService {
             await prisma.log.create({
                 data: {
                     action: 'create',
-                    initiatorId: req.initiator.id,
+                    initiatorId: req.body.initiator.id,
                     tableId: createdTable.id,
                     newValue: createdTable,
                 },
@@ -76,7 +76,7 @@ export class TableService {
             await prisma.log.create({
                 data: {
                     action: 'update',
-                    initiatorId: req.initiator.id,
+                    initiatorId: req.body.initiator.id,
                     tableId: updatedTable.id,
                     newValue: updatedTable,
                 },
@@ -103,7 +103,7 @@ export class TableService {
             await prisma.log.create({
                 data: {
                     action: 'delete',
-                    initiatorId: req.initiator.id,
+                    initiatorId: req.body.initiator.id,
                     tableId: deletedTable.id,
                     newValue: deletedTable,
                 },

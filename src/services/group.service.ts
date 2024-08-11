@@ -85,7 +85,7 @@ export class GroupService {
             await prisma.log.create({
                 data: {
                     action: 'create',
-                    initiatorId: req.initiator.id,
+                    initiatorId: req.body.initiator.id,
                     groupId: createdGroup.id,
                     newValue: createdGroup,
                 },
@@ -112,7 +112,7 @@ export class GroupService {
             await prisma.log.create({
                 data: {
                     action: 'update',
-                    initiatorId: req.initiator.id,
+                    initiatorId: req.body.initiator.id,
                     groupId: updatedGroup.id,
                     newValue: updatedGroup,
                 },
@@ -139,7 +139,7 @@ export class GroupService {
             await prisma.log.create({
                 data: {
                     action: 'delete',
-                    initiatorId: req.initiator.id,
+                    initiatorId: req.body.initiator.id,
                     groupId: deletedGroup.id,
                     newValue: deletedGroup,
                 },

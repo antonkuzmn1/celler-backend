@@ -1,25 +1,31 @@
 import {Request, Response} from 'express';
 
-export const get = async (_req: Request, res: Response) => {
+export class ColumnService {
+    constructor() {
+    }
+
+    async get(req: Request, res: Response) {
+
+    }
+
+    async create(req: Request, res: Response) {
+
+    }
+
+    async edit(req: Request, res: Response) {
+
+    }
+
+    async remove(req: Request, res: Response) {
+
+    }
+
+    async groupAdd(req: Request, res: Response) {
+
+    };
+
+    async groupRemove(req: Request, res: Response) {
+
+    };
 
 }
-
-export const create = async (req: Request, res: Response) => {
-
-}
-
-export const edit = async (req: Request, res: Response) => {
-
-}
-
-export const remove = async (req: Request, res: Response) => {
-
-}
-
-export const groupAdd = async (req: Request, res: Response) => {
-
-};
-
-export const groupRemove = async (req: Request, res: Response) => {
-
-};

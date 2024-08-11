@@ -74,7 +74,7 @@ export class UserService {
             await prisma.log.create({
                 data: {
                     action: 'create',
-                    initiatorId: req.initiator.id,
+                    initiatorId: req.body.initiator.id,
                     targetId: createdUser.id,
                     newValue: createdUser,
                 },
@@ -108,7 +108,7 @@ export class UserService {
             await prisma.log.create({
                 data: {
                     action: 'update',
-                    initiatorId: req.initiator.id,
+                    initiatorId: req.body.initiator.id,
                     targetId: updatedUser.id,
                     newValue: updatedUser,
                 },
@@ -135,7 +135,7 @@ export class UserService {
             await prisma.log.create({
                 data: {
                     action: 'delete',
-                    initiatorId: req.initiator.id,
+                    initiatorId: req.body.initiator.id,
                     targetId: deletedUser.id,
                     newValue: deletedUser,
                 },
