@@ -2,7 +2,7 @@ import {Request, Response} from 'express';
 import {prisma} from "../tools/prisma";
 import {logger} from "../tools/logger";
 import {errorResponse} from "../tools/errorResponses";
-import {TableGroupService} from "../security/group/tableGroup.service";
+import {TableGroupService} from "./tableGroup.service";
 
 export class TableService {
     constructor() {

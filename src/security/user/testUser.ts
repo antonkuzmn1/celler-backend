@@ -2,6 +2,7 @@ import {Express} from "express";
 import request from "supertest";
 import {User} from "@prisma/client";
 import {logger} from "../../tools/logger";
+import bcrypt from "bcrypt";
 
 export class TestUser {
 
@@ -26,25 +27,26 @@ export class TestUser {
     constructor(
         private readonly app: Express,
     ) {
+        logger.debug('TestUser');
+
         this.num = Math.floor(Math.random() * 100 * 100 * 100 * 100);
     }
 
     async init(admin: 0 | 1): Promise<TestUser> {
-        logger.info('TestUser.init');
+        logger.debug('TestUser.init');
 
         this.username = `test_user_${this.num}`;
         this.password = `test_user_${this.num}`;
 
         const rootToken: string = await this.getRootToken(this.rootUsername, this.rootPassword);
         const createdUser: User = await this.createUser(rootToken, admin);
-        const receivedToken: string = await this.getToken(createdUser.username, createdUser.password);
+        const receivedToken: string = await this.getToken(this.username, this.password);
 
         this.id = createdUser.id;
         this.created = createdUser.created;
         this.updated = createdUser.updated;
         this.deleted = createdUser.deleted;
         this.admin = createdUser.admin === 1 ? 1 : 0;
-        this.username = createdUser.username;
         this.passwordHash = createdUser.password;
         this.token = receivedToken;
         this.name = createdUser.name;
@@ -53,23 +55,8 @@ export class TestUser {
         return this;
     }
 
-    async getJson() {
-        return {
-            id: this.id,
-            created: this.created,
-            updated: this.updated,
-            deleted: this.deleted,
-            admin: this.admin,
-            username: this.username,
-            password: this.password,
-            token: this.token,
-            name: this.name,
-            title: this.title,
-        }
-    }
-
     private async getRootToken(username: string, password: string): Promise<string> {
-        logger.info('TestUser.getRootToken');
+        logger.debug('TestUser.getRootToken');
 
         const receivedRootToken = await request(this.app)
             .post(this.url)
@@ -79,7 +66,7 @@ export class TestUser {
     }
 
     private async createUser(rootToken: string, admin: 0 | 1): Promise<User> {
-        logger.info('TestUser.createUser');
+        logger.debug('TestUser.createUser');
 
         const createdUser = await request(this.app)
             .post(this.urlUser)
@@ -94,7 +81,7 @@ export class TestUser {
     }
 
     private async getToken(username: string, password: string): Promise<string> {
-        logger.info('TestUser.getToken');
+        logger.debug('TestUser.getToken');
 
         const receivedUserToken = await request(this.app)
             .post(this.url)

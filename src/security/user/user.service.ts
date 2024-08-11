@@ -3,14 +3,15 @@ import {prisma} from '../../tools/prisma';
 import bcrypt from "bcrypt";
 import {logger} from "../../tools/logger";
 import {errorResponse} from "../../tools/errorResponses";
-import {UserGroupService} from "../group/userGroup.service";
+import {UserGroupService} from "./userGroup.service";
 
 export class UserService {
     constructor() {
+        logger.debug('UserService');
     }
 
     async getAll(_req: Request, res: Response) {
-        logger.info('UserService.getAll');
+        logger.debug('UserService.getAll');
 
         const users = await prisma.user.findMany({
             where: {
@@ -53,7 +54,7 @@ export class UserService {
     }
 
     async create(req: Request, res: Response) {
-        logger.info('UserService.create');
+        logger.debug('UserService.create');
 
         const {admin, username, password, name, title} = req.body;
         if (!username || !password) {
@@ -89,7 +90,7 @@ export class UserService {
     }
 
     async edit(req: Request, res: Response) {
-        logger.info('UserService.edit');
+        logger.debug('UserService.edit');
 
         const {id, admin, username, password, name, title} = req.body;
         if (!id) {
@@ -123,7 +124,7 @@ export class UserService {
     }
 
     async remove(req: Request, res: Response) {
-        logger.info('UserService.remove');
+        logger.debug('UserService.remove');
 
         const id = req.body.id;
         if (!id) {
@@ -150,13 +151,15 @@ export class UserService {
     }
 
     async groupAdd(req: Request, res: Response) {
-        logger.info('UserService.groupAdd');
+        logger.debug('UserService.groupAdd');
+
         const userGroupService = new UserGroupService();
         await userGroupService.create(req, res);
     }
 
     async groupRemove(req: Request, res: Response) {
-        logger.info('UserService.groupRemove');
+        logger.debug('UserService.groupRemove');
+
         const userGroupService = new UserGroupService();
         await userGroupService.remove(req, res);
     }

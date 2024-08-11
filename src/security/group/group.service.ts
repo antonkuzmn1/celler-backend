@@ -2,14 +2,15 @@ import {Request, Response} from 'express';
 import {prisma} from "../../tools/prisma";
 import {errorResponse} from "../../tools/errorResponses";
 import {logger} from "../../tools/logger";
-import {UserGroupService} from "./userGroup.service";
+import {UserGroupService} from "../user/userGroup.service";
 
 export class GroupService {
     constructor() {
+        logger.debug('GroupService');
     }
 
     async getAll(_req: Request, res: Response) {
-        logger.info('GroupService.getAll');
+        logger.debug('GroupService.getAll');
 
         const groups = await prisma.group.findMany({
             where: {
@@ -71,7 +72,7 @@ export class GroupService {
     }
 
     async create(req: Request, res: Response) {
-        logger.info('GroupService.create');
+        logger.debug('GroupService.create');
 
         const {name, title} = req.body;
         if (!name) {
@@ -97,7 +98,7 @@ export class GroupService {
     }
 
     async edit(req: Request, res: Response) {
-        logger.info('GroupService.edit');
+        logger.debug('GroupService.edit');
 
         const {id, name, title} = req.body;
         if (!id) {
@@ -124,7 +125,7 @@ export class GroupService {
     }
 
     async remove(req: Request, res: Response) {
-        logger.info('GroupService.remove');
+        logger.debug('GroupService.remove');
 
         const id = req.body.id;
         if (!id) {
@@ -151,13 +152,15 @@ export class GroupService {
     }
 
     async userAdd(req: Request, res: Response) {
-        logger.info('GroupService.userAdd');
+        logger.debug('GroupService.userAdd');
+
         const userGroupService = new UserGroupService();
         await userGroupService.create(req, res);
     }
 
     async userRemove(req: Request, res: Response) {
-        logger.info('GroupService.userRemove');
+        logger.debug('GroupService.userRemove');
+
         const userGroupService = new UserGroupService();
         await userGroupService.remove(req, res);
     }

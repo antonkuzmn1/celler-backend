@@ -5,10 +5,11 @@ import {prisma} from "../../tools/prisma";
 
 export class UserGroupService {
     constructor() {
+        logger.debug('UserGroupService');
     }
 
     async create(req: Request, res: Response) {
-        logger.info('UserGroupService.create');
+        logger.debug('UserGroupService.create');
 
         const {userId, groupId} = req.body;
         if (!userId || !groupId) {
@@ -45,7 +46,8 @@ export class UserGroupService {
     }
 
     async remove(req: Request, res: Response) {
-        logger.info('UserGroupService.remove');
+        logger.debug('UserGroupService.remove');
+
         const {userId, groupId} = req.body;
         if (!userId || !groupId) {
             return errorResponse(res, 400);

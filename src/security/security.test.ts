@@ -7,9 +7,8 @@ const app = express();
 app.use(express.json());
 app.use('/api', router);
 
-const url: string = '/api/security';
-
-describe(url, () => {
+describe('security', () => {
+    const url: string = '/api/security';
     let random: number = Math.floor(Math.random() * 100 * 100 * 100 * 100);
     let user: TestUser;
     let admin: TestUser;
@@ -24,25 +23,25 @@ describe(url, () => {
     }, 20000);
 
     describe('getTokenByCredentials', () => {
-        test('Without username', () => {
-            request(app).post(url).send({
+        test('Without username', async () => {
+            await request(app).post(url).send({
                 password: user.password,
             }).expect('Content-Type', /json/).expect(400);
         });
-        test('Non-existent user', () => {
-            request(app).post(url).send({
+        test('Non-existent user', async () => {
+            await request(app).post(url).send({
                 username: `${user.username}_${random}`,
                 password: user.password,
             }).expect('Content-Type', /json/).expect(404);
         });
-        test('Incorrect password', () => {
-            request(app).post(url).send({
+        test('Incorrect password', async () => {
+            await request(app).post(url).send({
                 username: user.username,
                 password: `${user.password}_${random}`,
             }).expect('Content-Type', /json/).expect(403);
         });
-        test('Success', () => {
-            request(app).post(url).send({
+        test('Success', async () => {
+            await request(app).post(url).send({
                 username: user.username,
                 password: user.password,
             }).expect('Content-Type', /json/).expect(200);
@@ -50,17 +49,14 @@ describe(url, () => {
     });
 
     describe('getUserIdFromToken', () => {
-        test('Without token', () => {
-            request(app).get(url).set({
-                'Authorization': user.token,
-            }).expect('Content-Type', /json/).expect(401);
+        test('Without token', async () => {
+            await request(app).get(url).expect('Content-Type', /json/).expect(401);
         });
-        test('Success', () => {
-            request(app).get(url).set({
+        test('Success', async () => {
+            const response = await request(app).get(url).set({
                 'Authorization': user.token,
-            }).expect('Content-Type', /json/).expect(200).then(
-                response => expect(response.body).toBe(user.id),
-            );
+            }).expect('Content-Type', /json/).expect(200);
+            expect(response.body).toBe(user.id);
         });
     });
 
