@@ -9,7 +9,7 @@ app.use('/api', router);
 
 describe('security', () => {
     const url: string = '/api/security';
-    let random: number = Math.floor(Math.random() * 100 * 100 * 100 * 100);
+    const random: number = Math.floor(Math.random() * 100 * 100 * 100 * 100);
     let user: TestUser;
     let admin: TestUser;
 
