@@ -1,6 +1,6 @@
 import {prisma} from "./prisma";
 import bcrypt from "bcrypt";
-import {logger} from "./logger";
+import {logger} from "./logger/logger";
 
 export const createRootIfNotExists = async () => {
     const user = await prisma.user.findUnique({

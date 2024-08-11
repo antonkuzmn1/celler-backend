@@ -1,76 +1,77 @@
 import {Request, Response} from "express";
-import {logger} from "../logger";
-import {errorResponse} from "../utils/errorResponses.util";
-import {prisma} from "../prisma";
+import {logger} from "../../logger/logger";
+import {errorResponse} from "../errorResponses.util";
+import {prisma} from "../../prisma";
 
-export class UserGroupService {
+export class TableGroupService {
     constructor() {
     }
 
     async create(req: Request, res: Response) {
-        logger.info('UserGroupService.create');
+        logger.info('TableGroupService.create');
 
-        const {userId, groupId} = req.body;
-        if (!userId || !groupId) {
+        const {tableId, groupId} = req.body;
+        if (!tableId || !groupId) {
             return errorResponse(res, 400);
         }
 
         const group = await prisma.group.findUnique({
             where: {id: groupId},
         });
-        const user = await prisma.user.findUnique({
-            where: {id: userId},
+        const table = await prisma.table.findUnique({
+            where: {id: tableId},
         });
-        if (!user || !group) {
+        if (!table || !group) {
             return errorResponse(res, 400);
         }
 
         try {
-            const userGroup = await prisma.userGroup.create({
-                data: {userId, groupId},
+            const tableGroup = await prisma.tableGroup.create({
+                data: {tableId, groupId},
             });
             await prisma.log.create({
                 data: {
                     action: 'create',
                     initiatorId: req.body.initiator.id,
-                    targetId: userId,
+                    tableId: tableId,
                     groupId: groupId,
-                    newValue: userGroup,
+                    newValue: tableGroup,
                 },
             });
-            return res.status(201).json(userGroup);
+            return res.status(201).json(tableGroup);
         } catch (error) {
             return errorResponse(res, 500);
         }
     }
 
     async remove(req: Request, res: Response) {
-        logger.info('UserGroupService.remove');
-        const {userId, groupId} = req.body;
-        if (!userId || !groupId) {
+        logger.info('TableGroupService.remove');
+
+        const {tableId, groupId} = req.body;
+        if (!tableId || !groupId) {
             return errorResponse(res, 400);
         }
 
-        const userGroup = await prisma.userGroup.findUnique({
-            where: {userId_groupId: {userId, groupId}},
+        const tableGroup = await prisma.tableGroup.findUnique({
+            where: {tableId_groupId: {tableId, groupId}},
         });
-        if (!userGroup) {
+        if (!tableGroup) {
             return errorResponse(res, 400);
         }
 
         try {
-            const deletedUserGroup = await prisma.userGroup.delete({
-                where: {userId_groupId: {userId, groupId}},
+            const deletedTableGroup = await prisma.tableGroup.delete({
+                where: {tableId_groupId: {tableId, groupId}},
             });
             await prisma.log.create({
                 data: {
                     action: 'delete',
                     initiatorId: req.body.initiator.id,
-                    targetId: userId,
+                    tableId: tableId,
                     groupId: groupId,
                 },
             });
-            return res.status(201).json(deletedUserGroup);
+            return res.status(201).json(deletedTableGroup);
         } catch (error) {
             return errorResponse(res, 500);
         }

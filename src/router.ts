@@ -1,20 +1,15 @@
 import {Router} from 'express';
-import {authController} from './controllers/auth.controller';
-import {userController} from "./controllers/user.controller";
-import {groupController} from "./controllers/group.controller";
-import {tableController} from "./controllers/table.controller";
-import {columnController} from "./controllers/column.controller";
-import {rowController} from "./controllers/row.controller";
-import {cellController} from "./controllers/cell.controller";
-import {logController} from "./controllers/log.controller";
+import {securityController} from './security/security.controller';
+import {userController} from "./security/user/user.controller";
+import {groupController} from "./security/group/group.controller";
+import {tableController} from "./table/table.controller";
+import {columnController} from "./table/column.controller";
+import {rowController} from "./table/row.controller";
+import {cellController} from "./table/cell.controller";
+import {logController} from "./logger/log.controller";
 
 export const router = Router();
 
-router.use('/auth', authController);
-router.use('/user', userController);
-router.use('/group', groupController);
+router.use('/security', securityController);
 router.use('/table', tableController);
-router.use('/column', columnController);
-router.use('/row', rowController);
-router.use('/cell', cellController);
 router.use('/log', logController);

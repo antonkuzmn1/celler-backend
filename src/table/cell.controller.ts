@@ -1,5 +1,5 @@
 import {Router} from "express";
-import {create, edit, get, remove} from "../services/cell.service";
+import {create, edit, get, remove} from "./cell.service";
 
 export const cellController = Router();
 

@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import {router} from './router';
 import {createRootIfNotExists} from "./startup";
-import {logger} from "./logger";
+import {logger} from "./logger/logger";
 
 const app = express();
 app.use(express.json());

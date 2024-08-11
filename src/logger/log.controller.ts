@@ -1,5 +1,5 @@
 import {Router} from "express";
-import {get} from "../services/log.service";
+import {get} from "./log.service";
 
 export const logController = Router();
 

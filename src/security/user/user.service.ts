@@ -1,9 +1,9 @@
 import {Request, Response} from 'express';
-import {prisma} from '../prisma';
+import {prisma} from '../../prisma';
 import bcrypt from "bcrypt";
-import {logger} from "../logger";
-import {errorResponse} from "../utils/errorResponses.util";
-import {UserGroupService} from "./userGroup.service";
+import {logger} from "../../logger/logger";
+import {errorResponse} from "../errorResponses.util";
+import {UserGroupService} from "../group/userGroup.service";
 
 export class UserService {
     constructor() {
@@ -57,6 +57,7 @@ export class UserService {
 
         const {admin, username, password, name, title} = req.body;
         if (!username || !password) {
+            logger.error('username or password required');
             return errorResponse(res, 400);
         }
 
@@ -81,6 +82,8 @@ export class UserService {
             });
             return res.status(201).json(createdUser);
         } catch (error) {
+            console.error(error);
+            logger.error('Server error');
             return errorResponse(res, 500);
         }
     }

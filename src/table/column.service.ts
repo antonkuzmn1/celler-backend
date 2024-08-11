@@ -4,7 +4,7 @@ export class ColumnService {
     constructor() {
     }
 
-    async get(req: Request, res: Response) {
+    async getAll(req: Request, res: Response) {
 
     }
 

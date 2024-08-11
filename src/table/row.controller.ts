@@ -1,5 +1,5 @@
 import {Router} from "express";
-import {create, edit, get, remove} from "../services/row.service";
+import {create, edit, get, remove} from "./row.service";
 
 export const rowController = Router();
 

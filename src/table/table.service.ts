@@ -1,8 +1,8 @@
 import {Request, Response} from 'express';
 import {prisma} from "../prisma";
-import {logger} from "../logger";
-import {errorResponse} from "../utils/errorResponses.util";
-import {TableGroupService} from "./tableGroup.service";
+import {logger} from "../logger/logger";
+import {errorResponse} from "../security/errorResponses.util";
+import {TableGroupService} from "../security/group/tableGroup.service";
 
 export class TableService {
     constructor() {
@@ -21,7 +21,7 @@ export class TableService {
         });
 
         if (!req.body.initiator.admin) {
-            const initiatorGroupIds = req.body.initiator.userGroups.map((ug: { groupId: any; }) => ug.groupId);
+            const initiatorGroupIds = req.body.initiator.userGroups.map((ug: any) => ug.groupId);
             const filteredTables = tables.filter(table =>
                 table.tableGroups.some(tg => initiatorGroupIds.includes(tg.groupId))
             );
@@ -29,6 +29,12 @@ export class TableService {
         }
 
         return res.status(200).json(tables);
+    }
+
+    async getTable(req: Request, res: Response) {
+        if (!req.body.initiator.admin) {
+
+        }
     }
 
     async create(req: Request, res: Response) {

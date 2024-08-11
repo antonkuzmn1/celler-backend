@@ -1,6 +1,9 @@
 import {Router} from "express";
-import {SecurityMiddleware} from "../middleware/security.middleware";
-import {TableService} from "../services/table.service";
+import {SecurityMiddleware} from "../security/security.middleware";
+import {TableService} from "./table.service";
+import {columnController} from "./column.controller";
+import {rowController} from "./row.controller";
+import {cellController} from "./cell.controller";
 
 const sec = new SecurityMiddleware();
 const service = new TableService();
@@ -14,3 +17,7 @@ tableController.delete('/', sec.getUserFromToken, sec.userShouldBeAdmin, service
 
 tableController.post('/group', sec.getUserFromToken, sec.userShouldBeAdmin, service.groupAdd);
 tableController.delete('/group', sec.getUserFromToken, sec.userShouldBeAdmin, service.groupRemove);
+
+tableController.use('/column', columnController);
+tableController.use('/row', rowController);
+tableController.use('/cell', cellController);

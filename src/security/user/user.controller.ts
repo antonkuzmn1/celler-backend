@@ -1,6 +1,6 @@
 import {Router} from "express";
-import {UserService} from "../services/user.service";
-import {SecurityMiddleware} from "../middleware/security.middleware";
+import {UserService} from "./user.service";
+import {SecurityMiddleware} from "../security.middleware";
 
 const sec = new SecurityMiddleware();
 const service = new UserService();

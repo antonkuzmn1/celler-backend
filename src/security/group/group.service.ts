@@ -1,7 +1,7 @@
 import {Request, Response} from 'express';
-import {prisma} from "../prisma";
-import {errorResponse} from "../utils/errorResponses.util";
-import {logger} from "../logger";
+import {prisma} from "../../prisma";
+import {errorResponse} from "../errorResponses.util";
+import {logger} from "../../logger/logger";
 import {UserGroupService} from "./userGroup.service";
 
 export class GroupService {
