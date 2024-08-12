@@ -1,7 +1,7 @@
 import {Express} from "express";
 import {logger} from "../../tools/logger";
 import request from "supertest";
-import {User} from "@prisma/client";
+import {Group} from "@prisma/client";
 
 export class GroupFixture {
 
@@ -32,12 +32,11 @@ export class GroupFixture {
         this.name = `test_group_${this.num}`;
 
         const rootToken: string = await this.getRootToken(this.rootUsername, this.rootPassword);
-        const createdGroup: User = await this.createGroup(rootToken);
+        const createdGroup: Group = await this.createGroup(rootToken);
 
         this.id = createdGroup.id;
         this.created = createdGroup.created;
         this.updated = createdGroup.updated;
-        this.deleted = 0;
 
         return this;
     }
@@ -52,7 +51,7 @@ export class GroupFixture {
         return `Bearer ${receivedRootToken.body}`;
     }
 
-    private async createGroup(rootToken: string): Promise<User> {
+    private async createGroup(rootToken: string): Promise<Group> {
         logger.debug('GroupFixture.createGroup');
 
         const createdGroup = await request(this.app)
