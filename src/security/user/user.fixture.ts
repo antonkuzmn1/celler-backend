@@ -51,7 +51,7 @@ export class UserFixture {
         this.name = createdUser.name;
         this.title = createdUser.title;
 
-        logger.info(`UserFixture.init - successfully - ID=${this.id} - NAME=${this.name}`);
+        logger.info(`UserFixture.init - successfully - ID=${this.id} - USERNAME=${this.username}`);
         return this;
     }
 
