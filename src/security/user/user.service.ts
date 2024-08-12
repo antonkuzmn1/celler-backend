@@ -3,7 +3,7 @@ import {prisma} from '../../tools/prisma';
 import bcrypt from "bcrypt";
 import {logger} from "../../tools/logger";
 import {errorResponse} from "../../tools/errorResponses";
-import {UserGroupService} from "./userGroup.service";
+import {UserGroupService} from "./user-group.service";
 
 export class UserService {
     constructor() {

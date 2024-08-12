@@ -1,8 +1,8 @@
 import express from "express";
 import {router} from "../../tools/router";
 import request from "supertest";
-import {TestUser} from "../user/testUser";
-import {TestGroup} from "./testGroup";
+import {UserFixture} from "../user/user.fixture";
+import {GroupFixture} from "./group.fixture";
 
 const app = express();
 app.use(express.json());
@@ -11,8 +11,8 @@ app.use('/api', router);
 describe('group', () => {
     const url: string = '/api/security/group';
     const random: number = Math.floor(Math.random() * 100 * 100 * 100 * 100);
-    let user: TestUser;
-    let admin: TestUser;
+    let user: UserFixture;
+    let admin: UserFixture;
     const name = `test_group_${random}`;
 
     beforeEach(async () => {
@@ -20,8 +20,8 @@ describe('group', () => {
     })
 
     beforeAll(async () => {
-        user = await (new TestUser(app)).init(0);
-        admin = await (new TestUser(app)).init(1);
+        user = await (new UserFixture(app)).init(0);
+        admin = await (new UserFixture(app)).init(1);
     }, 20000);
 
     describe('getAll', () => {
@@ -79,9 +79,9 @@ describe('group', () => {
     });
 
     describe('edit', () => {
-        let rat: TestGroup;
+        let rat: GroupFixture;
         beforeAll(async () => {
-            rat = new TestGroup(app);
+            rat = new GroupFixture(app);
             await rat.init();
         }, 20000);
         test('Should have a token', async () => {
@@ -123,9 +123,9 @@ describe('group', () => {
     });
 
     describe('remove', () => {
-        let rat: TestGroup;
+        let rat: GroupFixture;
         beforeAll(async () => {
-            rat = new TestGroup(app);
+            rat = new GroupFixture(app);
             await rat.init();
         }, 20000);
         test('Should have a token', async () => {
@@ -163,9 +163,9 @@ describe('group', () => {
     });
 
     describe('userAdd', () => {
-        let rat: TestGroup;
+        let rat: GroupFixture;
         beforeAll(async () => {
-            rat = new TestGroup(app);
+            rat = new GroupFixture(app);
             await rat.init();
         }, 20000);
         test('Should have a token', async () => {
@@ -215,9 +215,9 @@ describe('group', () => {
     });
 
     describe('userRemove', () => {
-        let rat: TestGroup;
+        let rat: GroupFixture;
         beforeAll(async () => {
-            rat = new TestGroup(app);
+            rat = new GroupFixture(app);
             await rat.init();
         }, 20000);
         test('Should have a token', async () => {

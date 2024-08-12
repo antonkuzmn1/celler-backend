@@ -1,7 +1,7 @@
 import express from "express";
 import {router} from "../tools/router";
 import request from "supertest";
-import {TestUser} from "./user/testUser";
+import {UserFixture} from "./user/user.fixture";
 
 const app = express();
 app.use(express.json());
@@ -10,16 +10,16 @@ app.use('/api', router);
 describe('security', () => {
     const url: string = '/api/security';
     const random: number = Math.floor(Math.random() * 100 * 100 * 100 * 100);
-    let user: TestUser;
-    let admin: TestUser;
+    let user: UserFixture;
+    let admin: UserFixture;
 
     beforeEach(() => {
         jest.resetAllMocks();
     });
 
     beforeAll(async () => {
-        user = await (new TestUser(app)).init(0);
-        admin = await (new TestUser(app)).init(1);
+        user = await (new UserFixture(app)).init(0);
+        admin = await (new UserFixture(app)).init(1);
     }, 20000);
 
     describe('getTokenByCredentials', () => {

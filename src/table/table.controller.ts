@@ -1,9 +1,9 @@
 import {Router} from "express";
 import {SecurityMiddleware} from "../security/security.middleware";
 import {TableService} from "./table.service";
-import {columnController} from "./column.controller";
-import {rowController} from "./row.controller";
-import {cellController} from "./cell.controller";
+import {columnController} from "./column/column.controller";
+import {rowController} from "./row/row.controller";
+import {cellController} from "./cell/cell.controller";
 
 const sec = new SecurityMiddleware();
 const service = new TableService();

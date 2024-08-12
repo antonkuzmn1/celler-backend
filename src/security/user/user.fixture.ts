@@ -3,7 +3,7 @@ import request from "supertest";
 import {User} from "@prisma/client";
 import {logger} from "../../tools/logger";
 
-export class TestUser {
+export class UserFixture {
 
     id: number = 0;
     created: Date = new Date();
@@ -26,13 +26,13 @@ export class TestUser {
     constructor(
         private readonly app: Express,
     ) {
-        logger.debug('TestUser');
+        logger.debug('UserFixture');
 
         this.num = Math.floor(Math.random() * 100 * 100 * 100 * 100);
     }
 
-    async init(admin: 0 | 1): Promise<TestUser> {
-        logger.debug('TestUser.init');
+    async init(admin: 0 | 1): Promise<UserFixture> {
+        logger.debug('UserFixture.init');
 
         this.username = `test_user_${this.num}`;
         this.password = `test_user_${this.num}`;
@@ -55,7 +55,7 @@ export class TestUser {
     }
 
     private async getRootToken(username: string, password: string): Promise<string> {
-        logger.debug('TestUser.getRootToken');
+        logger.debug('UserFixture.getRootToken');
 
         const receivedRootToken = await request(this.app)
             .post(this.url)
@@ -65,7 +65,7 @@ export class TestUser {
     }
 
     private async createUser(rootToken: string, admin: 0 | 1): Promise<User> {
-        logger.debug('TestUser.createUser');
+        logger.debug('UserFixture.createUser');
 
         const createdUser = await request(this.app)
             .post(this.urlUser)
@@ -80,7 +80,7 @@ export class TestUser {
     }
 
     private async getToken(username: string, password: string): Promise<string> {
-        logger.debug('TestUser.getToken');
+        logger.debug('UserFixture.getToken');
 
         const receivedUserToken = await request(this.app)
             .post(this.url)

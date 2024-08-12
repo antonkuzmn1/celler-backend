@@ -1,6 +1,6 @@
 import express from "express";
 import {router} from "../tools/router";
-import {TestUser} from "../security/user/testUser";
+import {UserFixture} from "../security/user/user.fixture";
 import request from "supertest";
 import {prisma} from "../tools/prisma";
 
@@ -11,16 +11,16 @@ app.use('/api', router);
 describe('log', () => {
     const url: string = "/api/log";
     // const random: number = Math.floor(Math.random() * 100 * 100 * 100 * 100);
-    let user: TestUser;
-    let admin: TestUser;
+    let user: UserFixture;
+    let admin: UserFixture;
 
     beforeEach(async () => {
         jest.resetAllMocks();
     })
 
     beforeAll(async () => {
-        user = await (new TestUser(app)).init(0);
-        admin = await (new TestUser(app)).init(1);
+        user = await (new UserFixture(app)).init(0);
+        admin = await (new UserFixture(app)).init(1);
     }, 20000);
 
     describe('getAll', () => {
@@ -43,7 +43,7 @@ describe('log', () => {
     describe('create', () => {
         test('Success', async () => {
             const logCountBefore = await prisma.log.count();
-            const rat = new TestUser(app);
+            const rat = new UserFixture(app);
             await rat.init(0);
             const logCountAfter = await prisma.log.count();
             expect(logCountAfter).toBeGreaterThan(logCountBefore);

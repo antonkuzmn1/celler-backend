@@ -3,7 +3,7 @@ import {logger} from "../../tools/logger";
 import request from "supertest";
 import {User} from "@prisma/client";
 
-export class TestGroup {
+export class GroupFixture {
 
     id: number = 0;
     created: Date = new Date();
@@ -21,13 +21,13 @@ export class TestGroup {
     constructor(
         private readonly app: Express,
     ) {
-        logger.debug('TestGroup');
+        logger.debug('GroupFixture');
 
         this.num = Math.floor(Math.random() * 100 * 100 * 100 * 100);
     }
 
-    async init(): Promise<TestGroup> {
-        logger.debug('TestGroup.init');
+    async init(): Promise<GroupFixture> {
+        logger.debug('GroupFixture.init');
 
         this.name = `test_group_${this.num}`;
 
@@ -43,7 +43,7 @@ export class TestGroup {
     }
 
     private async getRootToken(username: string, password: string): Promise<string> {
-        logger.debug('TestGroup.getRootToken');
+        logger.debug('GroupFixture.getRootToken');
 
         const receivedRootToken = await request(this.app)
             .post(this.url)
@@ -53,7 +53,7 @@ export class TestGroup {
     }
 
     private async createGroup(rootToken: string): Promise<User> {
-        logger.debug('TestGroup.createGroup');
+        logger.debug('GroupFixture.createGroup');
 
         const createdGroup = await request(this.app)
             .post(this.urlGroup)
