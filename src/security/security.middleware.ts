@@ -33,16 +33,30 @@ export class SecurityMiddleware {
             }
 
             const user = await prisma.user.findUnique({
-                where: {id: decodedToken.id, deleted: 0},
-                include: {userGroups: {include: {group: true}}}
+                where: {
+                    id: decodedToken.id,
+                    deleted: 0
+                },
+                include: {
+                    userGroups: {
+                        include: {
+                            group: true
+                        }
+                    }
+                }
             });
             if (!user) {
                 logger.error('User does not exist');
                 return errorResponse(res, 401);
             }
 
+            const userWithGroupIds = {
+                ...user,
+                groupIds: user.userGroups.map(userGroup => userGroup.groupId),
+            };
+
             logger.info('User found with userId ' + decodedToken.id);
-            req.body.initiator = user;
+            req.body.initiator = userWithGroupIds;
             next();
         } catch (error) {
             console.error(error);
