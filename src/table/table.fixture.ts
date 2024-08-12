@@ -1,9 +1,9 @@
 import {Express} from "express";
-import {logger} from "../../tools/logger";
 import request from "supertest";
-import {Group} from "@prisma/client";
+import {Table} from "@prisma/client";
+import {logger} from "../tools/logger";
 
-export class GroupFixture {
+export class TableFixture {
 
     id: number = 0;
     created: Date = new Date();
@@ -12,8 +12,8 @@ export class GroupFixture {
     name: string = '';
     title: string = '';
 
-    private readonly url: string = '/api/security';
-    private readonly urlGroup: string = '/api/security/group';
+    private readonly urlSecurity: string = '/api/security';
+    private readonly urlTable: string = '/api/table';
     private readonly num: number = 0;
     private readonly rootUsername: string = 'root';
     private readonly rootPassword: string = 'root';
@@ -21,42 +21,42 @@ export class GroupFixture {
     constructor(
         private readonly app: Express,
     ) {
-        logger.debug('GroupFixture');
+        logger.debug('TableFixture');
 
         this.num = Math.floor(Math.random() * 100 * 100 * 100 * 100);
     }
 
-    async init(): Promise<GroupFixture> {
-        logger.debug('GroupFixture.init');
+    async init(): Promise<TableFixture> {
+        logger.debug('TableFixture.init');
 
-        this.name = `test_group_${this.num}`;
+        this.name = `test_table_${this.num}`;
 
         const rootToken: string = await this.getRootToken(this.rootUsername, this.rootPassword);
-        const createdGroup: Group = await this.createGroup(rootToken);
+        const createdTable: Table = await this.createTable(rootToken);
 
-        this.id = createdGroup.id;
-        this.created = createdGroup.created;
-        this.updated = createdGroup.updated;
+        this.id = createdTable.id;
+        this.created = createdTable.created;
+        this.updated = createdTable.updated;
 
-        logger.info(`GroupFixture.init - successfully - ID=${this.id} - NAME=${this.name}`);
+        logger.info(`TableFixture.init - successfully - ID=${this.id} - NAME=${this.name}`);
         return this;
     }
 
     private async getRootToken(username: string, password: string): Promise<string> {
-        logger.debug('GroupFixture.getRootToken');
+        logger.debug('TableFixture.getRootToken');
 
         const receivedRootToken = await request(this.app)
-            .post(this.url)
+            .post(this.urlSecurity)
             .send({username, password});
 
         return `Bearer ${receivedRootToken.body}`;
     }
 
-    private async createGroup(rootToken: string): Promise<Group> {
-        logger.debug('GroupFixture.createGroup');
+    private async createTable(rootToken: string): Promise<Table> {
+        logger.debug('TableFixture.createTable');
 
         const createdGroup = await request(this.app)
-            .post(this.urlGroup)
+            .post(this.urlTable)
             .set('Authorization', rootToken)
             .send({
                 name: this.name,
