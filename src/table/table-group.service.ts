@@ -8,10 +8,11 @@ export class TableGroupService {
     }
 
     async create(req: Request, res: Response) {
-        logger.info('TableGroupService.create');
+        logger.debug('TableGroupService.create');
 
         const {tableId, groupId} = req.body;
         if (!tableId || !groupId) {
+            logger.error('User\'s or Group\' ID is undefined');
             return errorResponse(res, 400);
         }
 
@@ -22,6 +23,7 @@ export class TableGroupService {
             where: {id: tableId},
         });
         if (!table || !group) {
+            logger.error('Group not found');
             return errorResponse(res, 400);
         }
 
@@ -45,7 +47,7 @@ export class TableGroupService {
     }
 
     async remove(req: Request, res: Response) {
-        logger.info('TableGroupService.remove');
+        logger.debug('TableGroupService.remove');
 
         const {tableId, groupId} = req.body;
         if (!tableId || !groupId) {

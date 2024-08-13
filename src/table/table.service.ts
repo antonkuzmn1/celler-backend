@@ -6,10 +6,11 @@ import {TableGroupService} from "./table-group.service";
 
 export class TableService {
     constructor() {
+        logger.debug('TableService');
     }
 
     async getAll(req: Request, res: Response) {
-        logger.info('TableService.getAll');
+        logger.debug('TableService.getAll');
 
         const tables = await prisma.table.findMany({
             where: {
@@ -32,7 +33,7 @@ export class TableService {
     }
 
     async create(req: Request, res: Response) {
-        logger.info('TableService.create');
+        logger.debug('TableService.create');
 
         const {name, title} = req.body;
         if (!name) {
@@ -42,8 +43,8 @@ export class TableService {
         try {
             const createdTable = await prisma.table.create({
                 data: {
-                    name: name,
-                    title: title,
+                    name,
+                    title
                 },
             });
             await prisma.log.create({
@@ -54,14 +55,32 @@ export class TableService {
                     newValue: createdTable,
                 },
             });
+            const createdColumn = await prisma.column.create({
+                data: {
+                    name: 'action',
+                    order: 0,
+                    type: 'action',
+                    tableId: createdTable.id,
+                }
+            })
+            await prisma.log.create({
+                data: {
+                    action: 'create',
+                    initiatorId: req.body.initiator.id,
+                    columnId: createdColumn.id,
+                    newValue: createdColumn,
+                },
+            });
+
             return res.status(201).json(createdTable);
         } catch (error) {
+            console.error(error);
             return errorResponse(res, 500);
         }
     }
 
     async edit(req: Request, res: Response) {
-        logger.info('TableService.edit');
+        logger.debug('TableService.edit');
 
         const {id, name, title} = req.body;
         if (!id) {
@@ -88,7 +107,7 @@ export class TableService {
     }
 
     async remove(req: Request, res: Response) {
-        logger.info('TableService.remove');
+        logger.debug('TableService.remove');
 
         const id = req.body.id;
         if (!id) {
@@ -115,13 +134,13 @@ export class TableService {
     }
 
     async groupAdd(req: Request, res: Response) {
-        logger.info('TableService.groupAdd');
+        logger.debug('TableService.groupAdd');
         const tableGroupService = new TableGroupService();
         await tableGroupService.create(req, res);
     }
 
     async groupRemove(req: Request, res: Response) {
-        logger.info('TableService.groupRemove');
+        logger.debug('TableService.groupRemove');
         const tableGroupService = new TableGroupService();
         await tableGroupService.remove(req, res);
     }

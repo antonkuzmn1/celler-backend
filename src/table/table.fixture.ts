@@ -55,14 +55,14 @@ export class TableFixture {
     private async createTable(rootToken: string): Promise<Table> {
         logger.debug('TableFixture.createTable');
 
-        const createdGroup = await request(this.app)
+        const createdTable = await request(this.app)
             .post(this.urlTable)
             .set('Authorization', rootToken)
             .send({
                 name: this.name,
             });
 
-        return createdGroup.body;
+        return createdTable.body;
     }
 
 }
