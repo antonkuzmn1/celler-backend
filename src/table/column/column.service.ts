@@ -2,6 +2,7 @@ import {Request, Response} from 'express';
 import {logger} from "../../tools/logger";
 import {prisma} from "../../tools/prisma";
 import {errorResponse} from "../../tools/errorResponses";
+import {ColumnGroupService} from "./column-group.service";
 
 export class ColumnService {
     constructor() {
@@ -49,7 +50,7 @@ export class ColumnService {
         return res.status(200).json(columns);
     }
 
-    async create(req: Request, res: Response): Promise<Response> {
+    async create(req: Request, res: Response) {
         logger.debug('ColumnService.create');
 
         const tableId = req.params.id;
@@ -147,7 +148,10 @@ export class ColumnService {
         try {
             const deletedColumn = await prisma.column.update({
                 where: {id},
-                data: {deleted: 1},
+                data: {
+                    deleted: 1,
+                    order: null,
+                },
             });
             await prisma.log.create({
                 data: {
@@ -163,12 +167,16 @@ export class ColumnService {
         }
     }
 
-    async groupAdd(req: Request, res: Response) {
-
+    groupAdd = async (req: Request, res: Response) => {
+        logger.debug('ColumnService.groupAdd');
+        const columnGroupService = new ColumnGroupService();
+        await columnGroupService.create(req, res);
     };
 
     async groupRemove(req: Request, res: Response) {
-
+        logger.debug('ColumnService.groupRemove');
+        const columnGroupService = new ColumnGroupService();
+        await columnGroupService.remove(req, res);
     };
 
 }

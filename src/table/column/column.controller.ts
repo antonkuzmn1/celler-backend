@@ -9,8 +9,8 @@ export const columnController = Router();
 
 columnController.get('/:id', sec.getUserFromToken, service.getAll);
 columnController.post('/:id', sec.getUserFromToken, sec.userShouldBeAdmin, service.create);
-columnController.put('/', sec.getUserFromToken, sec.userShouldBeAdmin, service.edit);
-columnController.delete('/', sec.getUserFromToken, sec.userShouldBeAdmin, service.remove);
+columnController.put('/:id', sec.getUserFromToken, sec.userShouldBeAdmin, service.edit);
+columnController.delete('/:id', sec.getUserFromToken, sec.userShouldBeAdmin, service.remove);
 
-columnController.post('/group', );
-columnController.delete('/group', );
+columnController.post('/:id/group', sec.getUserFromToken, sec.userShouldBeAdmin, service.groupAdd);
+columnController.delete('/:id/group', sec.getUserFromToken, sec.userShouldBeAdmin, service.groupRemove);
