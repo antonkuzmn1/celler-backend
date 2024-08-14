@@ -5,6 +5,7 @@ import {SecurityMiddleware} from "../security.middleware";
 const sec = new SecurityMiddleware();
 const service = new UserService();
 
+// /api/security/user
 export const userController = Router();
 
 userController.get('/', sec.getUserFromToken, service.getAll);

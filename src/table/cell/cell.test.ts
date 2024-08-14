@@ -1,64 +1,73 @@
 import express from "express";
-import request from "supertest";
 import {router} from "../../tools/router";
 import {UserFixture} from "../../security/user/user.fixture";
 import {GroupFixture} from "../../security/group/group.fixture";
 import {TableFixture} from "../table.fixture";
 import {logger} from "../../tools/logger";
+import request from "supertest";
 
 const app = express();
 app.use(express.json());
 app.use('/api', router);
 
-describe('Column', () => {
-    const url: string = '/api/table/column';
+describe('Cell', () => {
+    // const url: string = '/api/table/cell';
     const random: number = Math.floor(Math.random() * 100 * 100 * 100 * 100);
-    const name = `test_column_${random}`;
+    const name = `test_row_${random}`;
     const user: UserFixture = new UserFixture(app);
     const admin: UserFixture = new UserFixture(app);
     const group: GroupFixture = new GroupFixture(app);
     const table: TableFixture = new TableFixture(app);
+    const log = (msg: string) => {
+        logger.info('');
+        logger.info(msg);
+        logger.info('');
+    }
 
     beforeEach(async () => {
         jest.resetAllMocks();
-    })
+    });
 
     beforeAll(async () => {
         await user.init(0);
         await admin.init(1);
         await group.init();
         await table.init();
-        logger.info('Test fixtures initialized');
+        log('Test fixtures initialized');
     });
 
     test('e2e', async () => {
-        await request(app)
-            .get(url)
-            .set('Authorization', user.token)
-            .send({
-                tableId: table.id,
-            })
-            .expect(403)
-        logger.info('User cannot get a table without groups');
+
+        /// CREATE 3 ROWS
 
         await request(app)
-            .get(url)
+            .post('/api/table/row')
             .set('Authorization', admin.token)
             .send({
                 tableId: table.id,
-            })
-            .expect(200)
-        logger.info('Admin can get the all tables');
-
-        await request(app)
-            .post('/api/table/group')
-            .set('Authorization', admin.token)
-            .send({
-                tableId: table.id,
-                groupId: group.id,
             })
             .expect(201)
-        logger.info('Table has been added into group');
+        log('Admin can create a row #1');
+
+        await request(app)
+            .post('/api/table/row')
+            .set('Authorization', admin.token)
+            .send({
+                tableId: table.id,
+            })
+            .expect(201)
+        log('Admin can create a row #2');
+
+        await request(app)
+            .post('/api/table/row')
+            .set('Authorization', admin.token)
+            .send({
+                tableId: table.id,
+            })
+            .expect(201)
+        log('Admin can create a row #3');
+
+        /// ADD INTO THE GROUPS
 
         await request(app)
             .post('/api/security/user/group')
@@ -68,30 +77,30 @@ describe('Column', () => {
                 groupId: group.id,
             })
             .expect(201)
-        logger.info('User has been added into group');
+        log('User has been added into group');
 
-        const responseUser = await request(app)
-            .get(url)
-            .set('Authorization', user.token)
-            .send({
-                tableId: table.id,
-            })
-            .expect(200)
-        expect(responseUser.body.length).toBe(1);
-        logger.info('User gets only 1 table cuz it have general group');
-
-        const responseAdmin = await request(app)
-            .get(url)
+        await request(app)
+            .post('/api/table/group')
             .set('Authorization', admin.token)
             .send({
                 tableId: table.id,
+                groupId: group.id,
             })
-            .expect(200)
-        expect(responseAdmin.body.length).toBe(1);
-        logger.info('Admin cat get the all tables');
+            .expect(201)
+        log('Table has been added into group');
 
         await request(app)
-            .post(url)
+            .post('/api/table/groupCreate')
+            .set('Authorization', admin.token)
+            .send({
+                tableId: table.id,
+                groupId: group.id,
+            })
+            .expect(201)
+        log('Table has been added into groupCreate');
+
+        await request(app)
+            .post('/api/table/column')
             .set('Authorization', admin.token)
             .send({
                 tableId: table.id,
@@ -99,40 +108,37 @@ describe('Column', () => {
                 type: 'int',
             })
             .expect(201)
-        logger.info('Created column');
+        log('User can create a column');
 
-        const responseUser2 = await request(app)
-            .get(url)
+        await request(app)
+            .post('/api/table/row')
             .set('Authorization', user.token)
             .send({
                 tableId: table.id,
             })
-            .expect(200)
-        expect(responseUser2.body.length).toBe(2);
-        const column = responseUser2.body[1]
-        logger.info('User gets a 2 columns whit general group');
+            .expect(201)
+        log('User can create a row #1')
 
         await request(app)
-            .put(url)
-            .set('Authorization', admin.token)
+            .post('/api/table/row')
+            .set('Authorization', user.token)
             .send({
-                id: column.id,
-                name: `${name}_${random}`,
+                tableId: table.id,
             })
             .expect(201)
-        logger.info('Updated some fields of column');
+        log('User can create a row #2')
 
         await request(app)
-            .delete(url)
-            .set('Authorization', admin.token)
+            .post('/api/table/row')
+            .set('Authorization', user.token)
             .send({
-                id: column.id,
+                tableId: table.id,
             })
             .expect(201)
-        logger.info('Deleted the column');
+        log('User can create a row #3')
 
         await request(app)
-            .post(url)
+            .post('/api/table/column')
             .set('Authorization', admin.token)
             .send({
                 tableId: table.id,
@@ -140,28 +146,6 @@ describe('Column', () => {
                 type: 'int',
             })
             .expect(201)
-        logger.info('Created a new column');
-
-        await request(app)
-            .post(`${url}/group`)
-            .set('Authorization', admin.token)
-            .send({
-                columnId: column.id,
-                groupId: group.id,
-            })
-            .expect(201)
-        logger.info('Added new column into group');
-
-        await request(app)
-            .delete(`${url}/group`)
-            .set('Authorization', admin.token)
-            .send({
-                columnId: column.id,
-                groupId: group.id,
-            })
-            .expect(201);
-        logger.info('Removed column from group');
-
+        log('User can create a column');
     });
-
 });

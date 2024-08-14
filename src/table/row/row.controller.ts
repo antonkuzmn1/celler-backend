@@ -1,9 +1,13 @@
 import {Router} from "express";
-import {create, edit, get, remove} from "./row.service";
+import {SecurityMiddleware} from "../../security/security.middleware";
+import {RowService} from "./row.service";
 
+const sec = new SecurityMiddleware();
+const service = new RowService();
+
+// /api/table/row
 export const rowController = Router();
 
-rowController.get('/', get);
-rowController.post('/', create);
-rowController.put('/', edit);
-rowController.delete('/', remove);
+rowController.get('/', sec.getUserFromToken, service.getAll);
+rowController.post('/', sec.getUserFromToken, service.create);
+rowController.delete('/', sec.getUserFromToken, service.remove);

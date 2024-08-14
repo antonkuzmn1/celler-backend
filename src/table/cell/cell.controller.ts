@@ -1,9 +1,11 @@
 import {Router} from "express";
-import {create, edit, get, remove} from "./cell.service";
+import {SecurityMiddleware} from "../../security/security.middleware";
+import {CellService} from "./cell.service";
 
+const sec = new SecurityMiddleware();
+const service = new CellService();
+
+// /api/table/cell
 export const cellController = Router();
 
-cellController.get('/', get);
-cellController.post('/', create);
-cellController.put('/', edit);
-cellController.delete('/', remove);
+cellController.put('/', sec.getUserFromToken, service.edit);

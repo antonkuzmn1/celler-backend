@@ -1,17 +1,71 @@
 import {Request, Response} from 'express';
+import {logger} from "../../tools/logger";
+import {errorResponse} from "../../tools/errorResponses";
+import {prisma} from "../../tools/prisma";
 
-export const get = async (_req: Request, res: Response) => {
+export class CellService {
+    constructor() {
+        logger.debug('CellService');
+    }
 
-}
+    async edit(req: Request, res: Response) {
+        logger.debug('CellService.edit');
 
-export const create = async (req: Request, res: Response) => {
+        const {
+            id,
+            valueInt,
+            valueString,
+            valueDate,
+            valueBoolean,
+            valueDropdown,
+        } = req.body;
+        if (!id) {
+            return errorResponse(res, 400);
+        }
 
-}
+        const oldCell = await prisma.cell.findUnique({
+            where: {id}
+        });
+        if (!oldCell) {
+            return errorResponse(res, 400);
+        }
 
-export const edit = async (req: Request, res: Response) => {
+        if (!req.body.initiator.admin) {
+            const userGroupIds = req.body.initiator.groupIds;
+            const tableGroupIds = await prisma.tableGroupDelete.findMany({
+                where: {tableId: oldCell.tableId},
+            })
+            const hasMatch = userGroupIds.some(
+                (id: any) => tableGroupIds.includes(id)
+            );
+            if (!hasMatch) {
+                return errorResponse(res, 403);
+            }
+        }
 
-}
-
-export const remove = async (req: Request, res: Response) => {
+        try {
+            const updatedCell = await prisma.cell.update({
+                where: {id},
+                data: {
+                    valueInt,
+                    valueString,
+                    valueDate,
+                    valueBoolean,
+                    valueDropdown,
+                }
+            });
+            await prisma.log.create({
+                data: {
+                    action: 'update',
+                    initiatorId: req.body.initiator.id,
+                    cellId: updatedCell.id,
+                    newValue: updatedCell,
+                },
+            });
+            return res.status(201).json(updatedCell);
+        } catch (error) {
+            return errorResponse(res, 500);
+        }
+    }
 
 }

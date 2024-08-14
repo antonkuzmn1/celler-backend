@@ -12,7 +12,7 @@ export class ColumnService {
     async getAll(req: Request, res: Response): Promise<Response> {
         logger.debug('ColumnService.getAll');
 
-        const tableId = req.params.id;
+        const tableId = req.body.tableId;
         if (!tableId || !Number(tableId)) {
             return errorResponse(res, 400);
         }
@@ -23,7 +23,6 @@ export class ColumnService {
                 tableId: Number(tableId),
             },
             include: {
-                // @ts-ignore
                 table: {
                     include: {
                         tableGroups: true,
@@ -53,28 +52,15 @@ export class ColumnService {
     async create(req: Request, res: Response) {
         logger.debug('ColumnService.create');
 
-        const tableId = req.params.id;
+        const tableId = req.body.tableId;
         if (!tableId || !Number(tableId)) {
             return errorResponse(res, 400);
         }
 
-        const {name, title, type, dropdown} = req.body;
+        const {name, title, type, dropdown, order} = req.body;
         if (!name || !type) {
             return errorResponse(res, 400);
         }
-
-        const maxOrder = await prisma.column.aggregate({
-            _max: {
-                order: true,
-            },
-            where: {
-                tableId: 13,
-            },
-        });
-        if (!maxOrder && maxOrder !== 0) {
-            return errorResponse(res, 500);
-        }
-        const order = maxOrder._max.order ? maxOrder._max.order + 1 : 1;
 
         try {
             const createdColumn = await prisma.column.create({
@@ -83,7 +69,6 @@ export class ColumnService {
                     title,
                     order,
                     type,
-                    // @ts-ignore
                     dropdown,
                     tableId: Number(tableId),
                 }
@@ -96,6 +81,31 @@ export class ColumnService {
                     newValue: createdColumn,
                 },
             });
+
+            const allColumns = await prisma.column.findMany({
+                where: {
+                    tableId: Number(tableId),
+                }
+            });
+            const rowsAll = await prisma.row.findMany({
+                where: {
+                    tableId: Number(tableId),
+                },
+                include: {
+                    cells: true,
+                }
+            });
+            const rows = rowsAll.filter(row => row.cells.length < allColumns.length - 1);
+            await prisma.cell.createMany({
+                data: rows.map((row: any) => {
+                    return {
+                        tableId: Number(tableId),
+                        columnId: createdColumn.id,
+                        rowId: row.id,
+                    }
+                })
+            });
+
             return res.status(201).json(createdColumn);
         } catch (error) {
             console.error(error);
@@ -106,7 +116,7 @@ export class ColumnService {
     async edit(req: Request, res: Response) {
         logger.debug('ColumnService.edit');
 
-        const {id, name, title, type, dropdown} = req.body;
+        const {id, name, title, type, dropdown, order} = req.body;
         if (!id) {
             return errorResponse(res, 400);
         }
@@ -120,6 +130,7 @@ export class ColumnService {
                     type,
                     // @ts-ignore
                     dropdown,
+                    order,
                 }
             });
             await prisma.log.create({
@@ -167,7 +178,7 @@ export class ColumnService {
         }
     }
 
-    groupAdd = async (req: Request, res: Response) => {
+    async groupAdd(req: Request, res: Response) {
         logger.debug('ColumnService.groupAdd');
         const columnGroupService = new ColumnGroupService();
         await columnGroupService.create(req, res);

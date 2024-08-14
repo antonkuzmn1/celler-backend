@@ -5,6 +5,7 @@ import {groupController} from "./group/group.controller";
 
 const service = new SecurityService();
 
+// /api/security
 export const securityController = Router();
 
 securityController.post('/', service.getTokenByCredentials);

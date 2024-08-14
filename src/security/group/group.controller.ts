@@ -5,6 +5,7 @@ import {SecurityMiddleware} from "../security.middleware";
 const sec = new SecurityMiddleware();
 const service = new GroupService();
 
+// /api/security/group
 export const groupController = Router();
 
 groupController.get('/', sec.getUserFromToken, sec.userShouldBeAdmin, service.getAll);

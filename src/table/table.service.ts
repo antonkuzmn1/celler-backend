@@ -136,13 +136,36 @@ export class TableService {
     async groupAdd(req: Request, res: Response) {
         logger.debug('TableService.groupAdd');
         const tableGroupService = new TableGroupService();
-        await tableGroupService.create(req, res);
+        await tableGroupService.addTableGroup(req, res);
     }
 
     async groupRemove(req: Request, res: Response) {
         logger.debug('TableService.groupRemove');
         const tableGroupService = new TableGroupService();
-        await tableGroupService.remove(req, res);
+        await tableGroupService.removeTableGroup(req, res);
     }
 
+    async groupCreateAdd(req: Request, res: Response) {
+        logger.debug('TableService.groupCreateAdd');
+        const tableGroupService = new TableGroupService();
+        await tableGroupService.addTableGroupCreate(req, res);
+    }
+
+    async groupCreateRemove(req: Request, res: Response) {
+        logger.debug('TableService.groupCreateRemove');
+        const tableGroupService = new TableGroupService();
+        await tableGroupService.removeTableGroupCreate(req, res);
+    }
+
+    async groupDeleteAdd(req: Request, res: Response) {
+        logger.debug('TableService.groupDeleteAdd');
+        const tableGroupService = new TableGroupService();
+        await tableGroupService.addTableGroupDelete(req, res);
+    }
+
+    async groupDeleteRemove(req: Request, res: Response) {
+        logger.debug('TableService.groupDeleteRemove');
+        const tableGroupService = new TableGroupService();
+        await tableGroupService.removeTableGroupDelete(req, res);
+    }
 }

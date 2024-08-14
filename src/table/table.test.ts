@@ -212,4 +212,116 @@ describe('Table', () => {
         });
     });
 
+    describe('groupCreateAdd', () => {
+        let ratTable: TableFixture;
+        let ratGroup: GroupFixture;
+        beforeAll(async () => {
+            ratTable = new TableFixture(app);
+            await ratTable.init();
+            ratGroup = new GroupFixture(app);
+            await ratGroup.init();
+        }, 20000 * 2);
+        test('Should create a M2M relationship', async () => {
+            const response = await request(app)
+                .post(`${url}/groupCreate`)
+                .set('Authorization', admin.token)
+                .send({
+                    tableId: ratTable.id,
+                    groupId: ratGroup.id,
+                })
+                .expect('Content-Type', /json/)
+                .expect(201);
+            expect(response.body.tableId).toBe(ratTable.id);
+        });
+    });
+
+    describe('groupCreateRemove', () => {
+        let ratTable: TableFixture;
+        let ratGroup: GroupFixture;
+        beforeAll(async () => {
+            ratTable = new TableFixture(app);
+            await ratTable.init();
+            ratGroup = new GroupFixture(app);
+            await ratGroup.init();
+        }, 20000 * 2);
+        test('Should delete a M2M relationship', async () => {
+            const response1 = await request(app)
+                .post(`${url}/groupCreate`)
+                .set('Authorization', admin.token)
+                .send({
+                    tableId: ratTable.id,
+                    groupId: ratGroup.id,
+                })
+                .expect('Content-Type', /json/)
+                .expect(201);
+            expect(response1.body.tableId).toBe(ratTable.id);
+            const response2 = await request(app)
+                .delete(`${url}/groupCreate`)
+                .set('Authorization', admin.token)
+                .send({
+                    tableId: ratTable.id,
+                    groupId: ratGroup.id,
+                })
+                .expect('Content-Type', /json/)
+                .expect(201);
+            expect(response2.body.tableId).toBe(ratTable.id);
+        });
+    });
+
+    describe('groupDeleteAdd', () => {
+        let ratTable: TableFixture;
+        let ratGroup: GroupFixture;
+        beforeAll(async () => {
+            ratTable = new TableFixture(app);
+            await ratTable.init();
+            ratGroup = new GroupFixture(app);
+            await ratGroup.init();
+        }, 20000 * 2);
+        test('Should create a M2M relationship', async () => {
+            const response = await request(app)
+                .post(`${url}/groupDelete`)
+                .set('Authorization', admin.token)
+                .send({
+                    tableId: ratTable.id,
+                    groupId: ratGroup.id,
+                })
+                .expect('Content-Type', /json/)
+                .expect(201);
+            expect(response.body.tableId).toBe(ratTable.id);
+        });
+    });
+
+    describe('groupDeleteRemove', () => {
+        let ratTable: TableFixture;
+        let ratGroup: GroupFixture;
+        beforeAll(async () => {
+            ratTable = new TableFixture(app);
+            await ratTable.init();
+            ratGroup = new GroupFixture(app);
+            await ratGroup.init();
+        }, 20000 * 2);
+        test('Should delete a M2M relationship', async () => {
+            const response1 = await request(app)
+                .post(`${url}/groupDelete`)
+                .set('Authorization', admin.token)
+                .send({
+                    tableId: ratTable.id,
+                    groupId: ratGroup.id,
+                })
+                .expect('Content-Type', /json/)
+                .expect(201);
+            expect(response1.body.tableId).toBe(ratTable.id);
+            const response2 = await request(app)
+                .delete(`${url}/groupDelete`)
+                .set('Authorization', admin.token)
+                .send({
+                    tableId: ratTable.id,
+                    groupId: ratGroup.id,
+                })
+                .expect('Content-Type', /json/)
+                .expect(201);
+            expect(response2.body.tableId).toBe(ratTable.id);
+        });
+    });
+
 });

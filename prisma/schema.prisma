@@ -32,10 +32,12 @@ model Group {
   name    String   @unique @db.Char(50)
   title   String   @default("") @db.Char(255)
 
-  userGroups   UserGroup[]
-  tableGroups  TableGroup[]
-  columnGroups ColumnGroup[]
-  logs         Log[]
+  userGroups       UserGroup[]
+  tableGroups      TableGroup[]
+  columnGroups     ColumnGroup[]
+  logs             Log[]
+  TableGroupCreate TableGroupCreate[]
+  TableGroupDelete TableGroupDelete[]
 }
 
 model UserGroup {
@@ -57,14 +59,39 @@ model Table {
   name    String   @unique @db.Char(50)
   title   String   @default("") @db.Char(255)
 
-  tableGroups TableGroup[]
-  columns     Column[]
-  rows        Row[]
-  cells       Cell[]
-  logs        Log[]
+  tableGroupsCreate TableGroupCreate[]
+  tableGroupsDelete TableGroupDelete[]
+
+  tableGroups      TableGroup[]
+  columns          Column[]
+  rows             Row[]
+  cells            Cell[]
+  logs             Log[]
 }
 
 model TableGroup {
+  tableId Int
+  groupId Int
+  created DateTime @default(now()) @db.Timestamp(0)
+
+  table Table @relation(fields: [tableId], references: [id])
+  group Group @relation(fields: [groupId], references: [id])
+
+  @@id([tableId, groupId])
+}
+
+model TableGroupCreate {
+  tableId Int
+  groupId Int
+  created DateTime @default(now()) @db.Timestamp(0)
+
+  table Table @relation(fields: [tableId], references: [id])
+  group Group @relation(fields: [groupId], references: [id])
+
+  @@id([tableId, groupId])
+}
+
+model TableGroupDelete {
   tableId Int
   groupId Int
   created DateTime @default(now()) @db.Timestamp(0)
@@ -141,6 +168,8 @@ model Cell {
   table  Table  @relation(fields: [tableId], references: [id])
   column Column @relation(fields: [columnId], references: [id])
   row    Row    @relation(fields: [rowId], references: [id])
+
+  @@unique([tableId, columnId, rowId])
 }
 
 model Log {

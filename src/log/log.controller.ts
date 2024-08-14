@@ -5,6 +5,7 @@ import {SecurityMiddleware} from "../security/security.middleware";
 const service = new LogService();
 const sec = new SecurityMiddleware();
 
+// /api/log
 export const logController = Router();
 
 logController.get('/', sec.getUserFromToken, sec.userShouldBeAdmin, service.getAll);
