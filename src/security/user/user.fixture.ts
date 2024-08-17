@@ -62,7 +62,7 @@ export class UserFixture {
             .post(this.url)
             .send({username, password});
 
-        return `Bearer ${receivedRootToken.body}`;
+        return `Bearer ${receivedRootToken.body.token}`;
     }
 
     private async createUser(rootToken: string, admin: 0 | 1): Promise<User> {
@@ -87,6 +87,6 @@ export class UserFixture {
             .post(this.url)
             .send({username, password});
 
-        return `Bearer ${receivedUserToken.body}`;
+        return `Bearer ${receivedUserToken.body.token}`;
     }
 }

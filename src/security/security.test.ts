@@ -48,7 +48,7 @@ describe('security', () => {
         });
     });
 
-    describe('getUserIdFromToken', () => {
+    describe('getUserByToken', () => {
         test('Without token', async () => {
             await request(app).get(url).expect('Content-Type', /json/).expect(401);
         });
@@ -56,7 +56,7 @@ describe('security', () => {
             const response = await request(app).get(url).set({
                 'Authorization': user.token,
             }).expect('Content-Type', /json/).expect(200);
-            expect(response.body).toBe(user.id);
+            expect(response.body.id).toBe(user.id);
         });
     });
 

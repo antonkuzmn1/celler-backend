@@ -48,10 +48,10 @@ export class SecurityService {
         const token = jwt.sign({id: user.id}, JWT_SECRET, {expiresIn: '10m'});
 
         logger.info(`Token received: ${token}`);
-        return res.status(200).json(token);
+        return res.status(200).json({token: token, user: user});
     }
 
-    async getUserIdFromToken(req: Request, res: Response): Promise<Response> {
+    async getUserByToken(req: Request, res: Response): Promise<Response> {
         logger.debug('SecurityService.getUserIdFromToken');
 
         if (!JWT_SECRET) {
@@ -78,8 +78,16 @@ export class SecurityService {
                 return errorResponse(res, 500);
             }
 
-            logger.info('Received data from the token:', decodedToken);
-            return res.status(200).json(decodedToken.id);
+            const user: User | null = await prisma.user.findUnique({
+                where: {id: decodedToken.id, deleted: 0},
+            });
+            if (!user) {
+                logger.error('User not found');
+                return errorResponse(res, 404);
+            }
+
+            logger.info('Received data from the token:', user);
+            return res.status(200).json(user);
         } catch (error) {
             logger.error('Server Error');
             return errorResponse(res, 500);

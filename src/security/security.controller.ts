@@ -9,7 +9,7 @@ const service = new SecurityService();
 export const securityController = Router();
 
 securityController.post('/', service.getTokenByCredentials);
-securityController.get('/', service.getUserIdFromToken);
+securityController.get('/', service.getUserByToken);
 
 securityController.use('/user', userController);
 securityController.use('/group', groupController);
