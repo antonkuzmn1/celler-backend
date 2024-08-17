@@ -10,24 +10,30 @@ export class UserService {
         logger.debug('UserService');
     }
 
-    async getAll(_req: Request, res: Response) {
+    async getAll(req: Request, res: Response) {
         logger.debug('UserService.getAll');
 
-        const users = await prisma.user.findMany({
-            where: {
-                deleted: 0,
-            },
-            include: {
-                userGroups: {
-                    include: {
-                        group: true,
+        const id = req.body.id;
+        if (id) {
+            const user = await prisma.user.findUnique({
+                where: {
+                    id,
+                    deleted: 0,
+                },
+                include: {
+                    userGroups: {
+                        include: {
+                            group: true,
+                        }
                     }
-                }
-            },
-        });
+                },
+            });
 
-        const mappedUsers = users.map((user) => {
-            return {
+            if (!user) {
+                return errorResponse(res, 404);
+            }
+
+            const mappedUser = {
                 id: user.id,
                 created: user.created,
                 updated: user.updated,
@@ -48,9 +54,49 @@ export class UserService {
                     }
                 }),
             }
-        });
 
-        return res.status(200).json(mappedUsers);
+            return res.status(200).json(mappedUser);
+
+        } else {
+            const users = await prisma.user.findMany({
+                where: {
+                    deleted: 0,
+                },
+                include: {
+                    userGroups: {
+                        include: {
+                            group: true,
+                        }
+                    }
+                },
+            });
+
+            const mappedUsers = users.map((user) => {
+                return {
+                    id: user.id,
+                    created: user.created,
+                    updated: user.updated,
+                    admin: user.admin,
+                    username: user.username,
+                    name: user.name,
+                    title: user.title,
+                    userGroups: user.userGroups.filter((userGroup) => {
+                        return userGroup.group.deleted === 0
+                    }).map((userGroup) => {
+                        return {
+                            since: userGroup.created,
+                            groupId: userGroup.group.id,
+                            groupCreated: userGroup.group.created,
+                            groupUpdated: userGroup.group.updated,
+                            groupName: userGroup.group.name,
+                            groupTitle: userGroup.group.title,
+                        }
+                    }),
+                }
+            });
+
+            return res.status(200).json(mappedUsers);
+        }
     }
 
     async create(req: Request, res: Response) {

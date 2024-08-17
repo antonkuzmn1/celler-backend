@@ -52,7 +52,7 @@ export class SecurityService {
     }
 
     async getUserByToken(req: Request, res: Response): Promise<Response> {
-        logger.debug('SecurityService.getUserIdFromToken');
+        logger.debug('SecurityService.getUserByToken');
 
         if (!JWT_SECRET) {
             logger.error('JWT_SECRET is undefined');
@@ -86,10 +86,11 @@ export class SecurityService {
                 return errorResponse(res, 404);
             }
 
-            logger.info('Received data from the token:', user);
+            logger.info('Received data from the token:', user.username);
             return res.status(200).json(user);
         } catch (error) {
             logger.error('Server Error');
+            console.error(error);
             return errorResponse(res, 500);
         }
     }
