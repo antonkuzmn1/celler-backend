@@ -13,7 +13,7 @@ export class UserService {
     async getAll(req: Request, res: Response) {
         logger.debug('UserService.getAll');
 
-        const id = Number(req.params.id);
+        const id = Number(req.query.id);
         if (id) {
             const user = await prisma.user.findUnique({
                 where: {
