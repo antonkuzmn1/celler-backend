@@ -48,6 +48,7 @@ export class UserGroupService {
     async remove(req: Request, res: Response) {
         logger.debug('UserGroupService.remove');
 
+        console.log(req.body)
         const {userId, groupId} = req.body;
         if (!userId || !groupId) {
             logger.error('User\'s or Group\' ID is undefined');

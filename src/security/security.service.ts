@@ -45,7 +45,7 @@ export class SecurityService {
             return errorResponse(res, 403);
         }
 
-        const token = jwt.sign({id: user.id}, JWT_SECRET, {expiresIn: '10m'});
+        const token = jwt.sign({id: user.id}, JWT_SECRET, {expiresIn: '12h'});
 
         logger.info(`Token received: ${token}`);
         return res.status(200).json({token: token, user: user});

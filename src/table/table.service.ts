@@ -12,24 +12,47 @@ export class TableService {
     async getAll(req: Request, res: Response) {
         logger.debug('TableService.getAll');
 
-        const tables = await prisma.table.findMany({
-            where: {
-                deleted: 0,
-            },
-            include: {
-                tableGroups: true,
+        const id = Number(req.query.id);
+        if (id) {
+            if (!req.body.initiator.admin) {
+                return errorResponse(res, 403);
             }
-        });
 
-        if (!req.body.initiator.admin) {
-            const initiatorGroupIds = req.body.initiator.userGroups.map((ug: any) => ug.groupId);
-            const filteredTables = tables.filter(table =>
-                table.tableGroups.some(tg => initiatorGroupIds.includes(tg.groupId))
-            );
-            return res.status(200).json(filteredTables);
+            const table = await prisma.table.findUnique({
+                where: {
+                    id,
+                    deleted: 0,
+                },
+                include: {
+                    tableGroups: true,
+                }
+            });
+
+            if (!table) {
+                return errorResponse(res, 404);
+            }
+
+            return res.status(200).json(table);
+        } else {
+            const tables = await prisma.table.findMany({
+                where: {
+                    deleted: 0,
+                },
+                include: {
+                    tableGroups: true,
+                }
+            });
+
+            if (!req.body.initiator.admin) {
+                const initiatorGroupIds = req.body.initiator.userGroups.map((ug: any) => ug.groupId);
+                const filteredTables = tables.filter(table =>
+                    table.tableGroups.some(tg => initiatorGroupIds.includes(tg.groupId))
+                );
+                return res.status(200).json(filteredTables);
+            }
+
+            return res.status(200).json(tables);
         }
-
-        return res.status(200).json(tables);
     }
 
     async create(req: Request, res: Response) {

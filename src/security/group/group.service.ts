@@ -9,21 +9,43 @@ export class GroupService {
         logger.debug('GroupService');
     }
 
-    async getAll(_req: Request, res: Response) {
+    async getAll(req: Request, res: Response) {
         logger.debug('GroupService.getAll');
 
-        const groups = await prisma.group.findMany({
-            where: {
-                deleted: 0,
-            },
-            include: {
-                userGroups: {include: {user: true}},
-                tableGroups: {include: {table: true}},
-                columnGroups: {include: {column: true}},
-            },
-        });
+        const id = Number(req.query.id);
+        if (id) {
+            const group = await prisma.group.findUnique({
+                where: {
+                    id,
+                    deleted: 0,
+                },
+                include: {
+                    userGroups: {include: {user: true}},
+                    tableGroups: {include: {table: true}},
+                    columnGroups: {include: {column: true}},
+                },
+            });
 
-        return res.status(200).json(groups);
+            if (!group) {
+                return errorResponse(res, 404);
+            }
+
+            return res.status(200).json(group);
+
+        } else {
+            const groups = await prisma.group.findMany({
+                where: {
+                    deleted: 0,
+                },
+                include: {
+                    userGroups: {include: {user: true}},
+                    tableGroups: {include: {table: true}},
+                    columnGroups: {include: {column: true}},
+                },
+            });
+
+            return res.status(200).json(groups);
+        }
     }
 
     async create(req: Request, res: Response) {

@@ -112,7 +112,7 @@ export class UserService {
             const hashedPassword = await bcrypt.hash(password, 10);
             const createdUser = await prisma.user.create({
                 data: {
-                    admin: admin,
+                    admin: admin ? 1 : 0,
                     username: username,
                     password: hashedPassword,
                     name: name,
@@ -148,7 +148,7 @@ export class UserService {
             const updatedUser = await prisma.user.update({
                 where: {id},
                 data: {
-                    admin: admin,
+                    admin: admin ? 1 : 0,
                     username: username,
                     password: hashedPassword,
                     name: name,
