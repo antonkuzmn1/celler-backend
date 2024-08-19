@@ -24,7 +24,9 @@ export class TableService {
                     deleted: 0,
                 },
                 include: {
-                    tableGroups: true,
+                    tableGroups: {include: {group: true}},
+                    tableGroupsCreate: {include: {group: true}},
+                    tableGroupsDelete: {include: {group: true}},
                 }
             });
 
@@ -39,7 +41,9 @@ export class TableService {
                     deleted: 0,
                 },
                 include: {
-                    tableGroups: true,
+                    tableGroups: {include: {group: true}},
+                    tableGroupsCreate: {include: {group: true}},
+                    tableGroupsDelete: {include: {group: true}},
                 }
             });
 

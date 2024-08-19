@@ -86,7 +86,7 @@ export class SecurityService {
                 return errorResponse(res, 404);
             }
 
-            logger.info('Received data from the token:', user.username);
+            logger.info(`Received data from the token: ${user.username}`);
             return res.status(200).json(user);
         } catch (error) {
             logger.error('Server Error');

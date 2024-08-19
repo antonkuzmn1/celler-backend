@@ -114,6 +114,7 @@ export class TableGroupService {
             });
             return res.status(201).json(tableGroupCreate);
         } catch (error) {
+            console.error(error)
             return errorResponse(res, 500);
         }
     }
