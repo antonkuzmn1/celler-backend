@@ -12,7 +12,7 @@ export class ColumnService {
     async getAll(req: Request, res: Response): Promise<Response> {
         logger.debug('ColumnService.getAll');
 
-        const tableId = req.body.tableId;
+        const tableId = req.query.tableId;
         if (!tableId || !Number(tableId)) {
             return errorResponse(res, 400);
         }
