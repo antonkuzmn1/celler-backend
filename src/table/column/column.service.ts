@@ -17,36 +17,58 @@ export class ColumnService {
             return errorResponse(res, 400);
         }
 
-        const columns = await prisma.column.findMany({
-            where: {
-                deleted: 0,
-                tableId: Number(tableId),
-            },
-            include: {
-                table: {
-                    include: {
-                        tableGroups: true,
-                    }
-                },
-            }
-        })
-
-        if (!req.body.initiator.admin) {
-            const userGroupIds = req.body.initiator.groupIds;
-            const tableGroupIds = (columns[0] as any).table.tableGroups.map(
-                (tableGroup: any) => tableGroup.groupId
-            );
-            const hasMatch = userGroupIds.some(
-                (id: any) => tableGroupIds.includes(id)
-            );
-            if (hasMatch) {
-                return res.status(200).json(columns);
-            } else {
+        const id = Number(req.query.id);
+        if (id) {
+            if (!req.body.initiator.admin) {
                 return errorResponse(res, 403);
             }
-        }
+            const columns = await prisma.column.findUnique({
+                where: {
+                    deleted: 0,
+                    tableId: Number(tableId),
+                    id,
+                },
+                include: {
+                    table: {
+                        include: {
+                            tableGroups: true,
+                        }
+                    },
+                }
+            })
+            return res.status(200).json(columns);
+        } else {
+            const columns = await prisma.column.findMany({
+                where: {
+                    deleted: 0,
+                    tableId: Number(tableId),
+                },
+                include: {
+                    table: {
+                        include: {
+                            tableGroups: true,
+                        }
+                    },
+                }
+            })
 
-        return res.status(200).json(columns);
+            if (!req.body.initiator.admin) {
+                const userGroupIds = req.body.initiator.groupIds;
+                const tableGroupIds = (columns[0] as any).table.tableGroups.map(
+                    (tableGroup: any) => tableGroup.groupId
+                );
+                const hasMatch = userGroupIds.some(
+                    (id: any) => tableGroupIds.includes(id)
+                );
+                if (hasMatch) {
+                    return res.status(200).json(columns);
+                } else {
+                    return errorResponse(res, 403);
+                }
+            }
+
+            return res.status(200).json(columns);
+        }
     }
 
     async create(req: Request, res: Response) {
@@ -67,7 +89,7 @@ export class ColumnService {
                 data: {
                     name,
                     title,
-                    order,
+                    order: Number(order),
                     type,
                     dropdown,
                     tableId: Number(tableId),
@@ -128,9 +150,8 @@ export class ColumnService {
                     name,
                     title,
                     type,
-                    // @ts-ignore
                     dropdown,
-                    order,
+                    order: Number(order),
                 }
             });
             await prisma.log.create({
