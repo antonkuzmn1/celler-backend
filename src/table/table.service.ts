@@ -24,10 +24,39 @@ export class TableService {
                     deleted: 0,
                 },
                 include: {
-                    tableGroups: {include: {group: true}},
-                    tableGroupsCreate: {include: {group: true}},
-                    tableGroupsDelete: {include: {group: true}},
-                }
+                    tableGroups: {
+                        include: {
+                            group: true,
+                        },
+                    },
+                    tableGroupsCreate: {
+                        include: {
+                            group: true,
+                        },
+                    },
+                    tableGroupsDelete: {
+                        include: {
+                            group: true,
+                        },
+                    },
+                    columns: {
+                        where: {
+                            deleted: 0,
+                        },
+                    },
+                    rows: {
+                        where: {
+                            deleted: 0,
+                        },
+                        include: {
+                            cells: {
+                                include: {
+                                    column: true,
+                                },
+                            },
+                        },
+                    },
+                },
             });
 
             if (!table) {

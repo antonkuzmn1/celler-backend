@@ -62,11 +62,11 @@ model Table {
   tableGroupsCreate TableGroupCreate[]
   tableGroupsDelete TableGroupDelete[]
 
-  tableGroups      TableGroup[]
-  columns          Column[]
-  rows             Row[]
-  cells            Cell[]
-  logs             Log[]
+  tableGroups TableGroup[]
+  columns     Column[]
+  rows        Row[]
+  cells       Cell[]
+  logs        Log[]
 }
 
 model TableGroup {
@@ -110,6 +110,7 @@ model Column {
   name     String   @db.Char(50)
   title    String   @default("") @db.Char(255)
   order    Int?
+  width    Int   @default(0)
   type     String
   dropdown Json?
   tableId  Int

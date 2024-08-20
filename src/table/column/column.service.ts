@@ -89,7 +89,7 @@ export class ColumnService {
             return errorResponse(res, 400);
         }
 
-        const {name, title, type, dropdown, order} = req.body;
+        const {name, title, width, type, dropdown, order} = req.body;
         if (!name || !type) {
             return errorResponse(res, 400);
         }
@@ -100,6 +100,7 @@ export class ColumnService {
                     name,
                     title,
                     order: Number(order),
+                    width: Number(width),
                     type,
                     dropdown,
                     tableId: Number(tableId),
@@ -148,7 +149,7 @@ export class ColumnService {
     async edit(req: Request, res: Response) {
         logger.debug('ColumnService.edit');
 
-        const {id, name, title, type, dropdown, order} = req.body;
+        const {id, name, title, width, type, dropdown, order} = req.body;
         if (!id) {
             return errorResponse(res, 400);
         }
@@ -159,6 +160,7 @@ export class ColumnService {
                 data: {
                     name,
                     title,
+                    width: Number(width),
                     type,
                     dropdown,
                     order: Number(order),
