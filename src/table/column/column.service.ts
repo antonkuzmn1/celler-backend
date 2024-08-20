@@ -34,6 +34,11 @@ export class ColumnService {
                             tableGroups: true,
                         }
                     },
+                    columnGroups: {
+                        include: {
+                            group: true,
+                        }
+                    },
                 }
             })
             return res.status(200).json(columns);
@@ -47,6 +52,11 @@ export class ColumnService {
                     table: {
                         include: {
                             tableGroups: true,
+                        }
+                    },
+                    columnGroups: {
+                        include: {
+                            group: true,
                         }
                     },
                 }
