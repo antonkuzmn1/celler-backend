@@ -162,7 +162,7 @@ model Cell {
   valueString   String?
   valueDate     DateTime?
   valueBoolean  Boolean?
-  valueDropdown Json?
+  valueDropdown Int?
 
   logs Log[]
 

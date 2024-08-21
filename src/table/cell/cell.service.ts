@@ -51,7 +51,7 @@ export class CellService {
                     valueString,
                     valueDate: new Date(valueDate),
                     valueBoolean,
-                    valueDropdown,
+                    valueDropdown: Number(valueDropdown),
                 }
             });
             await prisma.log.create({
