@@ -1,6 +1,6 @@
 {
   "name": "celler-backend",
-  "version": "0.1.8-ALPHA",
+  "version": "0.1.9-ALPHA",
   "description": "",
   "main": "src/index.ts",
   "scripts": {

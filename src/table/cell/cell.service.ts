@@ -49,7 +49,7 @@ export class CellService {
                 data: {
                     valueInt,
                     valueString,
-                    valueDate,
+                    valueDate: new Date(valueDate),
                     valueBoolean,
                     valueDropdown,
                 }
@@ -64,6 +64,7 @@ export class CellService {
             });
             return res.status(201).json(updatedCell);
         } catch (error) {
+            console.error(error);
             return errorResponse(res, 500);
         }
     }

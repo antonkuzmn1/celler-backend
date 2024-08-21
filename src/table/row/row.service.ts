@@ -11,9 +11,58 @@ export class RowService {
     async getAll(req: Request, res: Response) {
         logger.debug('RowService.getAll');
 
-        const tableId = req.body.tableId;
+        const tableId = req.query.tableId;
         if (!tableId || !Number(tableId)) {
             return errorResponse(res, 400);
+        }
+
+        const rowId = req.query.rowId;
+        if (rowId && Number(rowId)) {
+            const row = await prisma.row.findUnique({
+                where: {
+                    deleted: 0,
+                    tableId: Number(tableId),
+                    id: Number(rowId),
+                },
+                include: {
+                    table: {
+                        include: {
+                            tableGroups: true,
+                        },
+                    },
+                    cells: {
+                        where: {
+                          column: {
+                              deleted: 0,
+                          }
+                        },
+                        include: {
+                            column: true,
+                        }
+                    },
+                },
+            });
+
+            if (!row) {
+                return errorResponse(res, 404);
+            }
+
+            if (!req.body.initiator.admin) {
+                const userGroupIds = req.body.initiator.groupIds;
+                const tableGroupIds = row.table.tableGroups.map(
+                    (tableGroup: any) => tableGroup.groupId
+                );
+                const hasMatch = userGroupIds.some(
+                    (id: any) => tableGroupIds.includes(id)
+                );
+                if (hasMatch) {
+                    return res.status(200).json(row);
+                } else {
+                    return errorResponse(res, 403);
+                }
+            }
+
+            return res.status(200).json(row);
         }
 
         const rows = await prisma.row.findMany({

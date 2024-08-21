@@ -50,6 +50,11 @@ export class TableService {
                         },
                         include: {
                             cells: {
+                                where: {
+                                    column: {
+                                        deleted: 0,
+                                    },
+                                },
                                 include: {
                                     column: true,
                                 },

@@ -21,15 +21,22 @@ import cors from 'cors';
 import {router} from './tools/router';
 import {OnStartupActions} from "./tools/onStartupActions";
 import {logger} from "./tools/logger";
+import fs from 'fs';
+import path from 'path';
 
 const app: Express = express();
 app.use(express.json());
 app.use(cors());
 app.use('/api', router);
 
+const packageJsonPath = path.resolve(__dirname, './package.json');
+const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+const version = packageJson.version;
+
 const PORT: string | 3000 = process.env.PORT || 3000;
 app.listen(PORT, async () => {
     logger.info(`Server running on http://localhost:${PORT}`);
+    logger.info(`Version: ${version}`)
 
     const startup: OnStartupActions = new OnStartupActions();
     await startup.runAll();

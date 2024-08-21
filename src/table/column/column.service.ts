@@ -128,7 +128,14 @@ export class ColumnService {
                     cells: true,
                 }
             });
-            const rows = rowsAll.filter(row => row.cells.length < allColumns.length - 1);
+            // console.log('rowsAll[0].cells:', rowsAll[0].cells);
+            // console.log('createdColumn:', createdColumn);
+            // const rows = rowsAll.filter(row => row.cells.length < allColumns.length - 1);
+            // console.log('old:', rows);
+            const rows = rowsAll.filter(row =>
+                !row.cells.some(cell => cell.columnId === createdColumn.id)
+            );
+            // console.log('rowsNew:', rowsNew);
             await prisma.cell.createMany({
                 data: rows.map((row: any) => {
                     return {
